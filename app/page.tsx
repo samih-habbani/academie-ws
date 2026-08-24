@@ -145,9 +145,7 @@ export default async function HomePage() {
           {/* PRÉSENTATION */}
           <section id="about" style={{ padding: '0 0 80px' }}>
             <div className="container">
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '420px 1fr',
+              <div className="about-grid" style={{
                 gap: 0,
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 24,

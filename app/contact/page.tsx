@@ -43,7 +43,7 @@ export default function ContactPage() {
             </p>
 
             <form ref={formRef} action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: 18, paddingBottom: 64 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+              <div className="grid-2col">
                 <div className="form-field">
                   <label htmlFor="firstName">Prénom *</label>
                   <input id="firstName" name="firstName" type="text" required />
@@ -54,7 +54,7 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+              <div className="grid-2col">
                 <div className="form-field">
                   <label htmlFor="email">Email *</label>
                   <input id="email" name="email" type="email" required />
