@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String
+  logo          String
+  orderCategory Int      @map("order_category")
+  courses       Course[]
+  themes        Theme[]
+
+  @@map("category")
+}
+
+model Theme {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  img         String
+  categoryId  Int      @map("category_id")
+  category    Category @relation(fields: [categoryId], references: [id])
+  courses     Course[]
+
+  @@index([categoryId])
+  @@map("theme")
+}
+
+enum Difficulty {
+  debutant
+  intermediaire
+  confirme
+}
+
+enum ChapterType {
+  cours
+  exo
+  tp
+  quiz
+}
+
+model Course {
+  id             Int         @id @default(autoincrement())
+  title          String
+  logo           String
+  description    String      @db.Text
+  date           DateTime    @db.Date
+  duration       String
+  categoryId     Int         @map("category_id")
+  category       Category    @relation(fields: [categoryId], references: [id])
+  difficulty     Difficulty?
+  themeId        Int?        @map("theme_id")
+  theme          Theme?      @relation(fields: [themeId], references: [id])
+  available      Boolean
+  price          String?
+  oldPrice       String      @map("old_price")
+  chapterCount   Int?        @map("chapter_count")
+  author         String?
+  chapters       Chapter[]
+
+  @@index([categoryId, available])
+  @@index([themeId, available])
+  @@map("course")
+}
+
+model Chapter {
+  id          Int      @id @default(autoincrement())
+  title       String
+  duration    String
+  urlVideo    String   @map("url_video")
+  courseId    Int      @map("id_course_id")
+  course      Course   @relation(fields: [courseId], references: [id])
+  free        Boolean  @default(false)
+  available   Boolean  @default(false)
+  type        ChapterType?
+  chapterPart String?  @map("chapter_part") @db.Text
+  numOrder    Int      @map("num_order")
+  description String?  @db.Text
+  material    String?
+
+  @@index([courseId, available])
+  @@map("chapter")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  roles    Json
+
+  @@map("user")
+}
+
