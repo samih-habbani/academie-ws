@@ -21,7 +21,7 @@ export default function ThemeCard({ theme }: { theme: ThemeCardProps }) {
         ) : (
           <span className="course-thumb-placeholder">🗂️</span>
         )}
-        <span className="tag tag-cyan" style={{ position: 'absolute', top: 10, right: 10 }}>
+        <span className="tag-overlay tag-overlay-cyan">
           {theme.courseCount} cours
         </span>
       </div>

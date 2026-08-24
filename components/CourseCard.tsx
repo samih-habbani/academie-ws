@@ -32,7 +32,7 @@ export default function CourseCard({ course }: { course: CourseCardProps }) {
           <span className="course-thumb-placeholder">🎬</span>
         )}
         {course.difficulty && (
-          <span className="tag tag-purple" style={{ position: 'absolute', top: 10, right: 10 }}>
+          <span className="tag-overlay tag-overlay-purple">
             {DIFFICULTY_LABELS[course.difficulty] ?? course.difficulty}
           </span>
         )}
