@@ -352,10 +352,15 @@ body {
   font-family: var(--f-body);
   transition: all .2s;
 }
-.social-pill-purple:hover { border-color: #A78BFA; color: #A78BFA; background: rgba(124,58,237,.1); }
-.social-pill-blue:hover   { border-color: #0A66C2; color: #0A66C2; background: rgba(10,102,194,.1); }
-.social-pill-white:hover  { border-color: #E6EDF3; color: #E6EDF3; background: rgba(230,237,243,.06); }
-.social-pill-red:hover    { border-color: #FF0000; color: #FF0000; background: rgba(255,0,0,.08); }
+.social-pill-purple { border-color: #A78BFA; color: #A78BFA; background: rgba(124,58,237,.1); }
+.social-pill-blue   { border-color: #0A66C2; color: #0A66C2; background: rgba(10,102,194,.1); }
+.social-pill-white  { border-color: #E6EDF3; color: #E6EDF3; background: rgba(230,237,243,.06); }
+.social-pill-red    { border-color: #FF0000; color: #FF0000; background: rgba(255,0,0,.08); }
+
+.social-pill-purple:hover { border-color: #A78BFA; color: #A78BFA; background: rgba(124,58,237,.2); }
+.social-pill-blue:hover   { border-color: #0A66C2; color: #0A66C2; background: rgba(10,102,194,.2); }
+.social-pill-white:hover  { border-color: #E6EDF3; color: #E6EDF3; background: rgba(230,237,243,.12); }
+.social-pill-red:hover    { border-color: #FF0000; color: #FF0000; background: rgba(255,0,0,.16); }
 
 /* PILOT / ABOUT SECTION */
 .pilot-section {
