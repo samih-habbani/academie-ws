@@ -17,9 +17,9 @@ export default function Nav() {
       </Link>
 
       <div className="nav-links">
-        <Link href="/#formations">Formations</Link>
-        <Link href="/#themes">Thématiques</Link>
         <Link href="/#about">À propos</Link>
+        <Link href="/#formations">Formations</Link>
+        <Link href="/contact">Contact</Link>
       </div>
     </nav>
   )

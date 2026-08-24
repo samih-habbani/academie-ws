@@ -125,6 +125,25 @@ body {
 .btn-ghost:hover { border-color: var(--purple-l); color: var(--text); }
 .btn-sm { padding: 6px 13px; font-size: 13px; }
 
+/* FORM */
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field label { font-size: 13px; font-weight: 600; color: var(--text-m); }
+.form-field input,
+.form-field textarea {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--f-body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+}
+.form-field input:focus,
+.form-field textarea:focus { border-color: var(--purple-l); }
+.form-field textarea { resize: vertical; min-height: 120px; }
+
 /* TAGS */
 .tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; }
 .tag-purple { background: rgba(124,58,237,.15); color: var(--purple-l); border: 1px solid rgba(124,58,237,.25); }
