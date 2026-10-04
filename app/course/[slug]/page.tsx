@@ -153,6 +153,12 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
             </div>
 
             {/* CHAPTERS */}
+            {course.chapters.length === 0 ? (
+              <div className="coming-soon" role="status">
+                <span aria-hidden="true">🎬</span>
+                <p>Videos coming soon</p>
+              </div>
+            ) : (
             <div style={{ paddingBottom: 64 }}>
               <h2 style={{ fontFamily: 'var(--f-display)', fontSize: 20, fontWeight: 700, marginBottom: 20 }}>
                 📋 Programme du cours
@@ -181,6 +187,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                 ))
               )}
             </div>
+            )}
 
           </div>
         </main>

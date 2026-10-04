@@ -683,3 +683,15 @@ body {
 .lecture-title { font-family: var(--f-display); font-size: 22px; font-weight: 700; margin-bottom: 10px; }
 .lecture-desc { color: var(--text-m); font-size: 14px; line-height: 1.7; }
 .lecture-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+/* Cours sans chapitre disponible */
+.coming-soon {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 72px 16px 96px; text-align: center; color: #fff;
+}
+.coming-soon span { font-size: clamp(40px, 7vw, 64px); }
+.coming-soon p {
+  font-family: var(--f-display); font-weight: 800; line-height: 1.15;
+  font-size: clamp(30px, 6vw, 56px); color: #fff;
+  text-shadow: 0 0 32px rgba(167,139,250,.55);
+}
