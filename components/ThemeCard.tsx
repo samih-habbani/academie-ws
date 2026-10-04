@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 type ThemeCardProps = {
@@ -13,10 +14,12 @@ export default function ThemeCard({ theme }: { theme: ThemeCardProps }) {
     <Link href={`/thematique/${theme.id}`} className="course-card">
       <div className="course-thumb">
         {theme.img ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={`/uploads/images/themes/${theme.img}`}
             alt={theme.title}
+            fill
+            sizes="(max-width: 640px) 100vw, 360px"
+            quality={70}
           />
         ) : (
           <span className="course-thumb-placeholder">🗂️</span>

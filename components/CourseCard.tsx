@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Difficulty } from '@prisma/client'
 
@@ -23,10 +24,13 @@ export default function CourseCard({ course }: { course: CourseCardProps }) {
     <Link href={`/cours/${course.id}`} className="course-card">
       <div className="course-thumb">
         {course.logo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          // Carte ≈ 280–362px de large dès 640px, pleine largeur (moins la marge) en dessous.
+          <Image
             src={`/uploads/images/courses/${course.logo}`}
             alt={course.title}
+            fill
+            sizes="(max-width: 640px) 100vw, 360px"
+            quality={70}
           />
         ) : (
           <span className="course-thumb-placeholder">🎬</span>

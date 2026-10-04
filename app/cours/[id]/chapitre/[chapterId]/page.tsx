@@ -5,7 +5,11 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getYoutubeEmbedUrl } from '@/lib/youtube'
 
-export const dynamic = 'force-dynamic'
+// ISR : rendu à la 1re visite puis servi depuis le cache, régénéré au plus toutes les heures.
+export const revalidate = 3600
+export async function generateStaticParams() {
+  return []
+}
 
 export default async function ChapterPage({ params }: { params: Promise<{ id: string; chapterId: string }> }) {
   const { id, chapterId } = await params
@@ -13,24 +17,20 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
   const chapId = parseInt(chapterId)
   if (isNaN(courseId) || isNaN(chapId)) notFound()
 
-  let course, chapter
-  try {
-    ;[course, chapter] = await Promise.all([
-      prisma.course.findUnique({
-        where: { id: courseId },
-        include: {
-          category: true,
-          chapters: {
-            where: { available: true },
-            orderBy: [{ chapterPart: 'asc' }, { numOrder: 'asc' }],
-          },
+  // Pas de try/catch → notFound() : une erreur BDD passagère ne doit pas être mise en cache comme un 404.
+  const [course, chapter] = await Promise.all([
+    prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        category: true,
+        chapters: {
+          where: { available: true },
+          orderBy: [{ chapterPart: 'asc' }, { numOrder: 'asc' }],
         },
-      }),
-      prisma.chapter.findUnique({ where: { id: chapId } }),
-    ])
-  } catch {
-    notFound()
-  }
+      },
+    }),
+    prisma.chapter.findUnique({ where: { id: chapId } }),
+  ])
 
   if (!course || !chapter) notFound()
 

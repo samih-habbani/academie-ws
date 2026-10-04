@@ -3,40 +3,41 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import StarCanvas from '@/components/StarCanvas'
 import CourseCard from '@/components/CourseCard'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
+// ISR : rendu à la 1re visite puis servi depuis le cache, régénéré au plus toutes les heures.
+export const revalidate = 3600
+export async function generateStaticParams() {
+  return []
+}
 
 export default async function ThemePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const themeId = parseInt(id)
   if (isNaN(themeId)) notFound()
 
-  let theme
-  try {
-    theme = await prisma.theme.findUnique({
-      where: { id: themeId },
-      include: {
-        category: { select: { id: true, title: true } },
-        courses: {
-          where: { available: true },
-          orderBy: { date: 'desc' },
-          select: {
-            id: true,
-            title: true,
-            logo: true,
-            description: true,
-            duration: true,
-            difficulty: true,
-            chapterCount: true,
-          },
+  // Pas de try/catch → notFound() : une erreur BDD passagère ne doit pas être mise en cache comme un 404.
+  const theme = await prisma.theme.findUnique({
+    where: { id: themeId },
+    include: {
+      category: { select: { id: true, title: true } },
+      courses: {
+        where: { available: true },
+        orderBy: { date: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          logo: true,
+          description: true,
+          duration: true,
+          difficulty: true,
+          chapterCount: true,
         },
       },
-    })
-  } catch {
-    notFound()
-  }
+    },
+  })
 
   if (!theme) notFound()
 
@@ -68,8 +69,16 @@ export default async function ThemePage({ params }: { params: Promise<{ id: stri
             <div className="course-header-pg">
               <div className="course-thumb-lg">
                 {theme.img ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={`/uploads/images/themes/${theme.img}`} alt={theme.title} />
+                  // Image d'en-tête visible dès l'arrivée : chargée en priorité (les cartes restent lazy).
+                  <Image
+                    src={`/uploads/images/themes/${theme.img}`}
+                    alt={theme.title}
+                    fill
+                    sizes="(max-width: 700px) 100vw, 160px"
+                    quality={70}
+                    loading="eager"
+                    fetchPriority="high"
+                  />
                 ) : (
                   <span style={{ fontSize: 40, opacity: .4 }}>🗂️</span>
                 )}

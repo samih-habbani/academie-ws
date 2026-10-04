@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { prisma } from '@/lib/db'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
@@ -5,7 +6,8 @@ import StarCanvas from '@/components/StarCanvas'
 import CourseCard from '@/components/CourseCard'
 import ThemeCard from '@/components/ThemeCard'
 
-export const dynamic = 'force-dynamic'
+// Page statique régénérée toutes les heures (ISR) au lieu d'une requête BDD par visite.
+export const revalidate = 3600
 
 type CategoryWithCourses = Awaited<ReturnType<typeof fetchData>>['categories']
 type CourseItem = CategoryWithCourses[number]['courses'][number]
@@ -68,16 +70,10 @@ async function fetchData() {
 }
 
 export default async function HomePage() {
-  let categories: CategoryWithCourses = []
-  let totalCourses = 0
-
-  try {
-    const data = await fetchData()
-    categories = data.categories
-    totalCourses = data.totalCourses
-  } catch (e) {
-    console.error('[DB ERROR]', e)
-  }
+  // Pas de try/catch volontaire : avec l'ISR, une erreur BDD avalée ici serait mise en cache
+  // (« 0 formation » pendant 1 h). En laissant l'erreur remonter, Next garde la dernière
+  // version valide de la page.
+  const { categories, totalCourses } = await fetchData()
 
   return (
     <>
@@ -155,10 +151,14 @@ export default async function HomePage() {
 
                 {/* PHOTO */}
                 <div style={{ position: 'relative', overflow: 'hidden', flexShrink: 0, alignSelf: 'stretch', minHeight: 500 }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  {/* Sous la ligne de flottaison : chargement différé (lazy) par défaut, pas de preload. */}
+                  <Image
                     src="/samih.webp"
                     alt="Samih Habbani"
+                    width={1122}
+                    height={1402}
+                    sizes="(max-width: 700px) 100vw, 420px"
+                    quality={75}
                     style={{
                       width: '100%', height: '100%',
                       objectFit: 'cover',
@@ -311,8 +311,14 @@ export default async function HomePage() {
                       flexShrink: 0,
                     }}>
                       {cat.logo ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={`/uploads/images/categories/${cat.logo}`} alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+                        <Image
+                          src={`/uploads/images/categories/${cat.logo}`}
+                          alt=""
+                          width={28}
+                          height={28}
+                          quality={70}
+                          style={{ width: 28, height: 28, objectFit: 'contain' }}
+                        />
                       ) : (
                         <span style={{ fontSize: 20 }}>📚</span>
                       )}

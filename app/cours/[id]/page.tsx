@@ -2,10 +2,16 @@ import { prisma } from '@/lib/db'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import StarCanvas from '@/components/StarCanvas'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
+// ISR : aucune page pré-générée au build, chaque cours est rendu à la 1re visite
+// puis servi depuis le cache et régénéré au plus toutes les heures.
+export const revalidate = 3600
+export async function generateStaticParams() {
+  return []
+}
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   debutant: 'Débutant',
@@ -32,22 +38,19 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
   const courseId = parseInt(id)
   if (isNaN(courseId)) notFound()
 
-  let course
-  try {
-    course = await prisma.course.findUnique({
-      where: { id: courseId },
-      include: {
-        category: true,
-        theme: true,
-        chapters: {
-          where: { available: true },
-          orderBy: [{ chapterPart: 'asc' }, { numOrder: 'asc' }],
-        },
+  // Pas de try/catch → notFound() : avec l'ISR, une erreur BDD passagère serait sinon
+  // mise en cache comme un « 404 » pendant 1 h sur un cours qui existe.
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    include: {
+      category: true,
+      theme: true,
+      chapters: {
+        where: { available: true },
+        orderBy: [{ chapterPart: 'asc' }, { numOrder: 'asc' }],
       },
-    })
-  } catch {
-    notFound()
-  }
+    },
+  })
 
   if (!course) notFound()
 
@@ -80,8 +83,16 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
             <div className="course-header-pg">
               <div className="course-thumb-lg">
                 {course.logo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={`/uploads/images/courses/${course.logo}`} alt={course.title} />
+                  // Seule image visible dès l'arrivée sur la page : chargée en priorité.
+                  <Image
+                    src={`/uploads/images/courses/${course.logo}`}
+                    alt={course.title}
+                    fill
+                    sizes="(max-width: 700px) 100vw, 160px"
+                    quality={70}
+                    loading="eager"
+                    fetchPriority="high"
+                  />
                 ) : (
                   <span style={{ fontSize: 40, opacity: .4 }}>🎬</span>
                 )}
