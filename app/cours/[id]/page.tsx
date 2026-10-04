@@ -144,7 +144,7 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
                   </Link>
                 )}
                 {course.supportUrl && (
-                  <a href={getDownloadUrl(course.supportUrl)} className="btn btn-ghost" style={{ whiteSpace: 'nowrap' }}>
+                  <a href={getDownloadUrl(course.supportUrl)} className="btn btn-ghost btn-support" style={{ whiteSpace: 'nowrap' }}>
                     ⬇ Support de cours
                   </a>
                 )}

@@ -123,7 +123,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
                   ☰ Sommaire
                 </Link>
                 {course.supportUrl && (
-                  <a href={getDownloadUrl(course.supportUrl)} className="btn btn-ghost">
+                  <a href={getDownloadUrl(course.supportUrl)} className="btn btn-ghost btn-support">
                     ⬇ Support de cours
                   </a>
                 )}
