@@ -182,32 +182,6 @@ body {
 .form-field textarea:focus { border-color: var(--purple-l); }
 .form-field textarea { resize: vertical; min-height: 120px; }
 
-/* ADMIN */
-.admin-row {
-  display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap;
-  padding: 14px 18px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-.admin-row-title { flex: 1 1 260px; min-width: 0; font-weight: 600; }
-.admin-row-title a { color: var(--text); text-decoration: none; }
-.admin-row-title a:hover { color: var(--purple-l); }
-.admin-support { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; flex: 1 1 340px; justify-content: flex-end; }
-.admin-support-current { font-size: 13px; min-width: 0; }
-.admin-support-file { color: var(--purple-l); text-decoration: none; word-break: break-all; }
-.admin-support-file:hover { text-decoration: underline; }
-.admin-support-actions { display: flex; gap: 8px; align-items: center; }
-.admin-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
-.admin-file-input:focus-visible + label { outline: 2px solid var(--purple-l); outline-offset: 2px; }
-.btn.is-disabled, .btn:disabled { opacity: .6; pointer-events: none; }
-.admin-msg { flex-basis: 100%; padding: 10px 14px; border-radius: 8px; font-size: 13px; }
-.admin-msg-ok { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); color: var(--success); }
-.admin-msg-error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); color: #F87171; }
-@media (max-width: 700px) {
-  .admin-support { justify-content: flex-start; }
-}
-
 /* TAGS */
 .tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; }
 .tag-purple { background: rgba(124,58,237,.15); color: var(--purple-l); border: 1px solid rgba(124,58,237,.25); }

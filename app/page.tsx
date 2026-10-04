@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { prisma } from '@/lib/db'
+import { mediaSrc } from '@/lib/media'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import StarCanvas from '@/components/StarCanvas'
@@ -312,7 +313,7 @@ export default async function HomePage() {
                     }}>
                       {cat.logo ? (
                         <Image
-                          src={`/uploads/images/categories/${cat.logo}`}
+                          src={mediaSrc('categories', cat.logo)}
                           alt=""
                           width={28}
                           height={28}

@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { mediaSrc } from '@/lib/media'
 import { Difficulty } from '@prisma/client'
 
 const DIFFICULTY_LABELS: Record<Difficulty, string> = {
@@ -28,7 +29,7 @@ export default function CourseCard({ course }: { course: CourseCardProps }) {
         {course.logo ? (
           // Carte ≈ 280–362px de large dès 640px, pleine largeur (moins la marge) en dessous.
           <Image
-            src={`/uploads/images/courses/${course.logo}`}
+            src={mediaSrc('courses', course.logo)}
             alt={course.title}
             fill
             sizes="(max-width: 640px) 100vw, 360px"

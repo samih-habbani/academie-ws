@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import { mediaSrc } from '@/lib/media'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import StarCanvas from '@/components/StarCanvas'
@@ -100,7 +101,7 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
                 {course.logo ? (
                   // Seule image visible dès l'arrivée sur la page : chargée en priorité.
                   <Image
-                    src={`/uploads/images/courses/${course.logo}`}
+                    src={mediaSrc('courses', course.logo)}
                     alt={course.title}
                     fill
                     sizes="(max-width: 700px) 100vw, 160px"

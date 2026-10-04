@@ -34,6 +34,35 @@ export const SUPPORT_PATH_REGEX = /^supports\/cours-(\d+)\/[A-Za-z0-9._() -]{1,1
 
 const BLOB_HOST_SUFFIX = '.public.blob.vercel-storage.com'
 
+// --- Images (logos de cours / catégories / thèmes) téléversées depuis le back-office ---
+export const MAX_IMAGE_BYTES = 5 * 1024 * 1024 // 5 Mo (le navigateur les réduit en WebP avant l'envoi)
+export const IMAGE_FOLDERS = ['courses', 'categories', 'themes'] as const
+export type ImageFolder = (typeof IMAGE_FOLDERS)[number]
+export const IMAGE_CONTENT_TYPES = ['image/webp', 'image/png', 'image/jpeg', 'image/avif', 'image/gif']
+export const IMAGE_EXTENSIONS = ['webp', 'png', 'jpg', 'jpeg', 'avif', 'gif']
+/** Chemin attendu dans le stockage : images/<courses|categories|themes>/<nom>.<ext> */
+export const IMAGE_PATH_REGEX = /^images\/(courses|categories|themes)\/[A-Za-z0-9._() -]{1,120}$/
+
+/** Vrai si l'URL est en https sur un store Vercel Blob public (sans identifiants dans l'URL). */
+export function isOwnBlobUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return (
+      parsed.protocol === 'https:' &&
+      parsed.username === '' &&
+      parsed.password === '' &&
+      parsed.hostname.endsWith(BLOB_HOST_SUFFIX)
+    )
+  } catch {
+    return false
+  }
+}
+
+/** Image téléversée dans le bon dossier (empêche d'enregistrer une URL arbitraire comme logo). */
+export function isImageBlobUrl(url: string, folder: ImageFolder): boolean {
+  return isOwnBlobUrl(url) && new URL(url).pathname.startsWith(`/images/${folder}/`)
+}
+
 /**
  * Vrai seulement si l'URL est en https, hébergée sur un store Vercel Blob public et rangée dans
  * le dossier du cours attendu : empêche d'enregistrer en base une URL arbitraire (autre site, autre cours).

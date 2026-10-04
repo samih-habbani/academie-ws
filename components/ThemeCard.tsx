@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { mediaSrc } from '@/lib/media'
 
 type ThemeCardProps = {
   id: number
@@ -16,7 +17,7 @@ export default function ThemeCard({ theme }: { theme: ThemeCardProps }) {
       <div className="course-thumb">
         {theme.img ? (
           <Image
-            src={`/uploads/images/themes/${theme.img}`}
+            src={mediaSrc('themes', theme.img)}
             alt={theme.title}
             fill
             sizes="(max-width: 640px) 100vw, 360px"

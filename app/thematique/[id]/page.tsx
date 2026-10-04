@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import { mediaSrc } from '@/lib/media'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import StarCanvas from '@/components/StarCanvas'
@@ -71,7 +72,7 @@ export default async function ThemePage({ params }: { params: Promise<{ id: stri
                 {theme.img ? (
                   // Image d'en-tête visible dès l'arrivée : chargée en priorité (les cartes restent lazy).
                   <Image
-                    src={`/uploads/images/themes/${theme.img}`}
+                    src={mediaSrc('themes', theme.img)}
                     alt={theme.title}
                     fill
                     sizes="(max-width: 700px) 100vw, 160px"

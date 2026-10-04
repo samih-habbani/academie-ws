@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { SignJWT, jwtVerify } from 'jose'
@@ -71,8 +72,9 @@ export async function destroySession() {
 /**
  * Renvoie l'admin connecté, ou null. Revérifie en base à chaque appel que le compte existe
  * toujours et a toujours le rôle admin (retirer le rôle coupe donc l'accès immédiatement).
+ * Mémoïsé par requête (cache React) : le layout et la page partagent une seule requête SQL.
  */
-export async function getAdmin(): Promise<AdminUser | null> {
+export const getAdmin = cache(async (): Promise<AdminUser | null> => {
   const cookieStore = await cookies()
   const token = cookieStore.get(COOKIE_NAME)?.value
   if (!token) return null
@@ -91,7 +93,7 @@ export async function getAdmin(): Promise<AdminUser | null> {
   } catch {
     return null
   }
-}
+})
 
 /** À appeler en haut de chaque page admin ET dans chaque action serveur. */
 export async function requireAdmin(): Promise<AdminUser> {

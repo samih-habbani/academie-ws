@@ -3,8 +3,10 @@
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { upload } from '@vercel/blob/client'
-import { removeSupport, saveSupport } from './actions'
+import { CircleCheck, Paperclip, TriangleAlert, Upload } from 'lucide-react'
+import { removeSupport, saveSupport } from '../actions'
 import { MAX_SUPPORT_BYTES, SUPPORT_EXTENSIONS, SUPPORT_TYPES, extensionOf, safeFileName } from '@/lib/support-files'
+import ConfirmDelete from './ConfirmDelete'
 
 type Props = {
   courseId: number
@@ -14,6 +16,7 @@ type Props = {
 
 type Message = { type: 'ok' | 'error'; text: string }
 
+/** Envoi / remplacement / suppression du support de cours (fichier téléversé directement vers Vercel Blob). */
 export default function SupportUploader({ courseId, supportName, downloadUrl }: Props) {
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -62,16 +65,9 @@ export default function SupportUploader({ courseId, supportName, downloadUrl }: 
     }
   }
 
-  async function onRemove() {
-    if (!window.confirm('Supprimer le support de ce cours ?')) return
-    setBusy(true)
-    setMessage(null)
+  async function onRemove(): Promise<{ error?: string } | void> {
     const result = await removeSupport(courseId)
-    setBusy(false)
-    if (!result.ok) {
-      setMessage({ type: 'error', text: result.error })
-      return
-    }
+    if (!result.ok) return { error: result.error }
     setMessage({ type: 'ok', text: 'Support supprimé.' })
     router.refresh()
   }
@@ -79,42 +75,41 @@ export default function SupportUploader({ courseId, supportName, downloadUrl }: 
   const inputId = `support-${courseId}`
 
   return (
-    <div className="admin-support">
-      <div className="admin-support-current">
-        {supportName && downloadUrl ? (
-          <a href={downloadUrl} className="admin-support-file" title="Télécharger">
-            📎 {supportName}
-          </a>
-        ) : (
-          <span style={{ color: 'var(--text-d)' }}>Aucun support</span>
-        )}
-      </div>
-
-      <div className="admin-support-actions">
-        <input
-          ref={inputRef}
-          id={inputId}
-          type="file"
-          accept={SUPPORT_EXTENSIONS.map((e) => `.${e}`).join(',')}
-          onChange={onFileChange}
-          disabled={busy}
-          className="admin-file-input"
-        />
-        <label htmlFor={inputId} className={`btn btn-ghost btn-sm${busy ? ' is-disabled' : ''}`}>
-          {busy ? `Envoi… ${progress}%` : supportName ? 'Remplacer' : 'Téléverser'}
-        </label>
-        {supportName && (
-          <button type="button" className="btn btn-ghost btn-sm" onClick={onRemove} disabled={busy}>
-            Supprimer
-          </button>
-        )}
+    <div className="adm-fields">
+      <div className="adm-video-preview" style={{ justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+          <Paperclip size={20} color="var(--purple-l)" aria-hidden="true" />
+          {supportName && downloadUrl ? (
+            <a href={downloadUrl} style={{ color: 'var(--purple-l)', wordBreak: 'break-all' }} title="Télécharger">{supportName}</a>
+          ) : (
+            <span className="adm-muted">Aucun support pour ce cours</span>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+          <input ref={inputRef} id={inputId} type="file" accept={SUPPORT_EXTENSIONS.map((e) => `.${e}`).join(',')} onChange={onFileChange} disabled={busy} className="adm-file-input" />
+          <label htmlFor={inputId} className="adm-btn adm-btn-ghost adm-btn-sm" aria-disabled={busy}>
+            <Upload size={14} aria-hidden="true" /> {busy ? `Envoi… ${progress}%` : supportName ? 'Remplacer' : 'Téléverser'}
+          </label>
+          {supportName && (
+            <ConfirmDelete
+              action={async () => onRemove()}
+              fields={{ id: courseId }}
+              title="Supprimer le support ?"
+              description="Le fichier sera supprimé du stockage et le bouton de téléchargement disparaîtra du site."
+              variant="icon"
+              label="Supprimer le support"
+            />
+          )}
+        </div>
       </div>
 
       {message && (
-        <div role="status" className={`admin-msg admin-msg-${message.type}`}>
-          {message.text}
+        <div className={`adm-alert ${message.type === 'ok' ? 'adm-alert-info' : 'adm-alert-error'}`} role="status">
+          {message.type === 'ok' ? <CircleCheck size={18} aria-hidden="true" /> : <TriangleAlert size={18} aria-hidden="true" />}
+          <div>{message.text}</div>
         </div>
       )}
+      <div className="adm-hint">Formats : PDF, ZIP, Word, PowerPoint, Excel… (100 Mo maximum). Le fichier est proposé en téléchargement sur la page du cours et sur chacune de ses vidéos.</div>
     </div>
   )
 }
