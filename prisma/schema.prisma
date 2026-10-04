@@ -62,6 +62,8 @@ model Course {
   oldPrice       String      @map("old_price")
   chapterCount   Int?        @map("chapter_count")
   author         String?
+  supportUrl     String?     @map("support_url")
+  supportName    String?     @map("support_name")
   chapters       Chapter[]
 
   @@index([categoryId, available])

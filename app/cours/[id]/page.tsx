@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import StarCanvas from '@/components/StarCanvas'
+import { getDownloadUrl } from '@vercel/blob'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -47,15 +48,29 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
       theme: true,
       chapters: {
         where: { available: true },
-        orderBy: [{ chapterPart: 'asc' }, { numOrder: 'asc' }],
+        // numOrder est l'ordre voulu, unique dans le cours. Trier d'abord par chapterPart (texte)
+        // mélangeait les parties dans l'ordre alphabétique.
+        orderBy: [{ numOrder: 'asc' }, { id: 'asc' }],
       },
     },
   })
 
   if (!course) notFound()
 
-  const parts = [...new Set(course.chapters.map(c => c.chapterPart).filter(Boolean))]
-  const hasParts = parts.length > 1
+  const hasParts = new Set(course.chapters.map(c => c.chapterPart).filter(Boolean)).size > 1
+
+  // Blocs de chapitres consécutifs d'une même partie, dans l'ordre de numOrder (un chapitre sans
+  // partie reste à sa place, et une partie interrompue par un autre chapitre est affichée en 2 blocs).
+  const groups: { part: string | null; chapters: typeof course.chapters }[] = []
+  for (const ch of course.chapters) {
+    const part = ch.chapterPart ?? null
+    const last = groups[groups.length - 1]
+    if (last && last.part === part) last.chapters.push(ch)
+    else groups.push({ part, chapters: [ch] })
+  }
+  // Numéro affiché = position dans le cours (1, 2, 3…), pas la valeur brute de numOrder
+  // (qui peut commencer à 8 quand des chapitres sont masqués).
+  const position = new Map(course.chapters.map((ch, i) => [ch.id, i + 1]))
 
   return (
     <>
@@ -127,6 +142,11 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
                     🚀 Commencer
                   </Link>
                 )}
+                {course.supportUrl && (
+                  <a href={getDownloadUrl(course.supportUrl)} className="btn btn-ghost" style={{ whiteSpace: 'nowrap' }}>
+                    ⬇ Support de cours
+                  </a>
+                )}
                 <span className="tag tag-green" style={{ fontSize: 13 }}>✓ Accès gratuit</span>
               </div>
             </div>
@@ -138,23 +158,25 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
               </h2>
 
               {hasParts ? (
-                parts.map(part => (
-                  <div key={part} style={{ marginBottom: 32 }}>
-                    <div style={{
-                      fontSize: 13, fontWeight: 700, color: 'var(--purple-l)',
-                      textTransform: 'uppercase', letterSpacing: 1.5,
-                      marginBottom: 12, paddingLeft: 4,
-                    }}>
-                      {part}
-                    </div>
-                    {course.chapters.filter(c => c.chapterPart === part).map((ch) => (
-                      <ChapterRow key={ch.id} chapter={ch} courseId={course.id} />
+                groups.map((group, i) => (
+                  <div key={i} style={{ marginBottom: 32 }}>
+                    {group.part && (
+                      <div style={{
+                        fontSize: 13, fontWeight: 700, color: 'var(--purple-l)',
+                        textTransform: 'uppercase', letterSpacing: 1.5,
+                        marginBottom: 12, paddingLeft: 4,
+                      }}>
+                        {group.part}
+                      </div>
+                    )}
+                    {group.chapters.map((ch) => (
+                      <ChapterRow key={ch.id} chapter={ch} position={position.get(ch.id)!} courseId={course.id} />
                     ))}
                   </div>
                 ))
               ) : (
                 course.chapters.map((ch) => (
-                  <ChapterRow key={ch.id} chapter={ch} courseId={course.id} />
+                  <ChapterRow key={ch.id} chapter={ch} position={position.get(ch.id)!} courseId={course.id} />
                 ))
               )}
             </div>
@@ -168,13 +190,14 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
   )
 }
 
-function ChapterRow({ chapter, courseId }: {
-  chapter: { id: number; title: string; duration: string | null; numOrder: number | null; free: boolean; type: string | null }
+function ChapterRow({ chapter, position, courseId }: {
+  chapter: { id: number; title: string; duration: string | null; free: boolean; type: string | null }
+  position: number
   courseId: number
 }) {
   return (
     <Link href={`/cours/${courseId}/chapitre/${chapter.id}`} className="chapter-item">
-      <div className="chapter-num">{chapter.numOrder ?? '—'}</div>
+      <div className="chapter-num">{position}</div>
       <div className="chapter-info">
         <div className="chapter-name">{chapter.title}</div>
 <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>

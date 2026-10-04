@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db'
 import Nav from '@/components/Nav'
 import StarCanvas from '@/components/StarCanvas'
+import { getDownloadUrl } from '@vercel/blob'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getYoutubeEmbedUrl } from '@/lib/youtube'
@@ -25,7 +26,8 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
         category: true,
         chapters: {
           where: { available: true },
-          orderBy: [{ chapterPart: 'asc' }, { numOrder: 'asc' }],
+          // Ordre voulu = numOrder (unique dans le cours) ; il détermine aussi « suivant / précédent ».
+          orderBy: [{ numOrder: 'asc' }, { id: 'asc' }],
         },
       },
     }),
@@ -117,6 +119,11 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
                 <Link href={`/cours/${courseId}`} className="btn btn-ghost">
                   ☰ Sommaire
                 </Link>
+                {course.supportUrl && (
+                  <a href={getDownloadUrl(course.supportUrl)} className="btn btn-ghost">
+                    ⬇ Support de cours
+                  </a>
+                )}
                 {prevChapter && (
                   <Link href={`/cours/${courseId}/chapitre/${prevChapter.id}`} className="btn btn-ghost">
                     ← Précédent
@@ -153,7 +160,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
                     style={{ marginBottom: 6 }}
                   >
                     <div className={`chapter-num ${isCurrent ? 'playing' : ''}`}>
-                      {isCurrent ? '▶' : (ch.numOrder ?? idx + 1)}
+                      {isCurrent ? '▶' : idx + 1}
                     </div>
                     <div className="chapter-info">
                       <div className="chapter-name" style={{ fontSize: 13 }}>{ch.title}</div>
