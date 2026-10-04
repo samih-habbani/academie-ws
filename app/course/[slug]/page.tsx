@@ -3,7 +3,7 @@ import { mediaSrc } from '@/lib/media'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import StarCanvas from '@/components/StarCanvas'
-import { getDownloadUrl } from '@vercel/blob'
+import { supportDownloadUrl } from '@/lib/support-download'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -57,6 +57,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
   if (!course) notFound()
 
+  const supportUrl = supportDownloadUrl(course.supportUrl)
   const hasParts = new Set(course.chapters.map(c => c.chapterPart).filter(Boolean)).size > 1
 
   // Blocs de chapitres consécutifs d'une même partie, dans l'ordre de numOrder (un chapitre sans
@@ -142,8 +143,8 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                     🚀 Commencer
                   </Link>
                 )}
-                {course.supportUrl && (
-                  <a href={getDownloadUrl(course.supportUrl)} className="btn btn-ghost btn-support" style={{ whiteSpace: 'nowrap' }}>
+                {supportUrl && (
+                  <a href={supportUrl} className="btn btn-ghost btn-support" style={{ whiteSpace: 'nowrap' }}>
                     ⬇ Support de cours
                   </a>
                 )}

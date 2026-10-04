@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getDownloadUrl } from '@vercel/blob'
+import { supportDownloadUrl } from '@/lib/support-download'
 import { ArrowDown, ArrowUp, ExternalLink, ListVideo, Pencil, Plus } from 'lucide-react'
 import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/admin-auth'
@@ -97,7 +97,7 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
             <SupportUploader
               courseId={course.id}
               supportName={course.supportName}
-              downloadUrl={course.supportUrl ? getDownloadUrl(course.supportUrl) : null}
+              downloadUrl={supportDownloadUrl(course.supportUrl)}
             />
           </div>
         </section>

@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/db'
 import Nav from '@/components/Nav'
 import StarCanvas from '@/components/StarCanvas'
-import { getDownloadUrl } from '@vercel/blob'
+import { supportDownloadUrl } from '@/lib/support-download'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { chapterUrl, courseUrl } from '@/lib/urls'
@@ -39,6 +39,8 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
   // null si la valeur n'est pas une vraie référence YouTube (ancien bloc Vimeo, vide…) → « Vidéo non disponible ».
   const embedUrl = chapter.urlVideo ? getYoutubeEmbedUrl(chapter.urlVideo) : null
+
+  const supportUrl = supportDownloadUrl(course.supportUrl)
 
   const allChapters = course.chapters
   const currentIdx = allChapters.findIndex(c => c.id === chapId)
@@ -123,8 +125,8 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                 <Link href={courseUrl(course.slug)} className="btn btn-ghost">
                   ☰ Sommaire
                 </Link>
-                {course.supportUrl && (
-                  <a href={getDownloadUrl(course.supportUrl)} className="btn btn-ghost btn-support">
+                {supportUrl && (
+                  <a href={supportUrl} className="btn btn-ghost btn-support">
                     ⬇ Support de cours
                   </a>
                 )}
