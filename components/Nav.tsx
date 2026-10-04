@@ -2,14 +2,19 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function Nav() {
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
+  // Sur l'accueil, les liens vers « / » et « /#ancre » pointent vers la page courante :
+  // les précharger ne sert à rien (3 requêtes inutiles).
+  const onHome = usePathname() === '/'
+  const homePrefetch = onHome ? false : undefined
 
   return (
     <nav className="nav-futuriste" role="navigation">
-      <Link href="/" className="nav-logo" onClick={close}>
+      <Link href="/" className="nav-logo" onClick={close} prefetch={homePrefetch}>
         <svg width="36" height="40" viewBox="0 0 36 40" fill="none" aria-hidden="true">
           <polygon points="18,2 34,11 34,29 18,38 2,29 2,11" fill="#7C3AED" stroke="rgba(167,139,250,.35)" strokeWidth=".8"/>
           <path d="M18 10 C15.5 13.5 14 18 14 22 L16.2 22 L16.2 25.5 C16.2 26.3 17 27 18 27 C19 27 19.8 26.3 19.8 25.5 L19.8 22 L22 22 C22 18 20.5 13.5 18 10Z" fill="white" opacity=".95"/>
@@ -35,8 +40,8 @@ export default function Nav() {
       </button>
 
       <div className={`nav-links${open ? ' is-open' : ''}`}>
-        <Link href="/#about" onClick={close}>À propos</Link>
-        <Link href="/#formations" onClick={close}>Formations</Link>
+        <Link href="/#about" onClick={close} prefetch={homePrefetch}>À propos</Link>
+        <Link href="/#formations" onClick={close} prefetch={homePrefetch}>Formations</Link>
         <Link href="/contact" onClick={close}>Contact</Link>
       </div>
     </nav>

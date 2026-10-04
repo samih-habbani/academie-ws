@@ -21,7 +21,9 @@ type CourseCardProps = {
 
 export default function CourseCard({ course }: { course: CourseCardProps }) {
   return (
-    <Link href={`/cours/${course.id}`} className="course-card">
+    // prefetch={false} : pas de préchargement au scroll (une page entière par carte visible),
+    // il se fait au survol de la carte.
+    <Link href={`/cours/${course.id}`} className="course-card" prefetch={false}>
       <div className="course-thumb">
         {course.logo ? (
           // Carte ≈ 280–362px de large dès 640px, pleine largeur (moins la marge) en dessous.

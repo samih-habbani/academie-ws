@@ -11,7 +11,8 @@ type ThemeCardProps = {
 
 export default function ThemeCard({ theme }: { theme: ThemeCardProps }) {
   return (
-    <Link href={`/thematique/${theme.id}`} className="course-card">
+    // prefetch={false} : préchargement au survol plutôt qu'au scroll.
+    <Link href={`/thematique/${theme.id}`} className="course-card" prefetch={false}>
       <div className="course-thumb">
         {theme.img ? (
           <Image
