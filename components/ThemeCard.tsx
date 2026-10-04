@@ -1,9 +1,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { mediaSrc } from '@/lib/media'
+import { themeUrl } from '@/lib/urls'
 
 type ThemeCardProps = {
   id: number
+  slug: string
   title: string
   description: string
   img: string
@@ -13,7 +15,7 @@ type ThemeCardProps = {
 export default function ThemeCard({ theme }: { theme: ThemeCardProps }) {
   return (
     // prefetch={false} : préchargement au survol plutôt qu'au scroll.
-    <Link href={`/thematique/${theme.id}`} className="course-card" prefetch={false}>
+    <Link href={themeUrl(theme.slug)} className="course-card" prefetch={false}>
       <div className="course-thumb">
         {theme.img ? (
           <Image

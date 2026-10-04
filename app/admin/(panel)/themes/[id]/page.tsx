@@ -25,7 +25,7 @@ export default async function EditThemePage({ params }: { params: Promise<{ id: 
         action={updateTheme.bind(null, theme.id)}
         submitLabel="Enregistrer les modifications"
         categories={categories}
-        initial={{ title: theme.title, description: theme.description, img: theme.img, categoryId: String(theme.categoryId) }}
+        initial={{ title: theme.title, slug: theme.slug, description: theme.description, img: theme.img, categoryId: String(theme.categoryId) }}
       />
       <section className="adm-card adm-danger-zone" style={{ marginTop: 24, maxWidth: 760 }}>
         <div className="adm-card-head">

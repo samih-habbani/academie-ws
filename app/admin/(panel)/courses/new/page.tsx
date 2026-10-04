@@ -26,7 +26,7 @@ export default async function NewCoursePage() {
         categories={categories}
         themes={themes.map((t) => ({ id: t.id, title: t.title, categoryTitle: t.category.title }))}
         initial={{
-          title: '', description: '', categoryId: '', themeId: '', difficulty: '', date: toDateInput(new Date()),
+          title: '', slug: '', description: '', categoryId: '', themeId: '', difficulty: '', date: toDateInput(new Date()),
           duration: '', author: 'Samih Habbani', price: '', oldPrice: '', chapterCount: '', logo: '', available: true,
         }}
       />

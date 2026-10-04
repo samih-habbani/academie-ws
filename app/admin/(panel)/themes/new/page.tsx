@@ -11,7 +11,7 @@ export default async function NewThemePage() {
     <>
       <PageHeader title="Nouvelle thématique" crumbs={[{ label: 'Thématiques', href: '/admin/themes' }, { label: 'Nouvelle' }]}
         subtitle="Une thématique regroupe plusieurs cours sous une seule carte sur la page d’accueil." />
-      <ThemeForm action={createTheme} submitLabel="Créer la thématique" categories={categories} initial={{ title: '', description: '', img: '', categoryId: '' }} />
+      <ThemeForm action={createTheme} submitLabel="Créer la thématique" categories={categories} initial={{ title: '', slug: '', description: '', img: '', categoryId: '' }} />
     </>
   )
 }

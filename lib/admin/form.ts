@@ -38,6 +38,9 @@ export function redirectWithToast(path: string, message: string, type: 'ok' | 'e
 /** Les pages publiques sont en cache (ISR 1 h) : après une modification, on les invalide pour qu'elles se régénèrent. */
 export function revalidatePublic() {
   revalidatePath('/')
+  revalidatePath('/course/[slug]', 'page')
+  revalidatePath('/course/[slug]/chapter/[chapterId]', 'page')
+  revalidatePath('/theme/[slug]', 'page')
   revalidatePath('/cours/[id]', 'page')
   revalidatePath('/cours/[id]/chapitre/[chapterId]', 'page')
   revalidatePath('/thematique/[id]', 'page')

@@ -22,6 +22,7 @@ model Category {
 model Theme {
   id          Int      @id @default(autoincrement())
   title       String
+  slug        String   @unique
   description String
   img         String
   categoryId  Int      @map("category_id")
@@ -48,6 +49,7 @@ enum ChapterType {
 model Course {
   id             Int         @id @default(autoincrement())
   title          String
+  slug           String      @unique
   logo           String
   description    String      @db.Text
   date           DateTime    @db.Date

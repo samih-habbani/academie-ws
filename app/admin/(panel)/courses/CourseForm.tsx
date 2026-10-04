@@ -7,6 +7,7 @@ import ImageField from '../../_components/ImageField'
 
 export type CourseValues = {
   title: string
+  slug: string
   description: string
   categoryId: string
   themeId: string
@@ -51,6 +52,8 @@ export default function CourseForm({
             <div className="adm-card-head"><div className="adm-card-title">Informations générales</div></div>
             <div className="adm-card-pad adm-fields">
               <TextInput name="title" label="Titre" required defaultValue={text('title')} error={err.title} maxLength={255} />
+              <TextInput name="slug" label="Adresse de la page (URL)" defaultValue={text('slug')} error={err.slug} maxLength={60}
+                placeholder="ex. python" hint="Page du cours : /course/… — laisse vide pour la générer depuis le titre. Modifier l’URL d’un cours déjà publié casse ses anciens liens." />
               <TextArea name="description" label="Description" required defaultValue={text('description')} error={err.description} rows={5}
                 hint="Affichée sur la carte du cours et en tête de sa page." />
               <div className="adm-fields-2">

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { ExternalLink } from 'lucide-react'
 import { prisma } from '@/lib/db'
+import { chapterUrl } from '@/lib/urls'
 import { requireAdmin } from '@/lib/admin-auth'
 import { param, type SearchParams } from '@/lib/admin/list'
 import { safeReturn } from '@/lib/admin/sync'
@@ -23,7 +24,7 @@ export default async function EditChapterPage({
   if (!Number.isInteger(id) || id <= 0) notFound()
 
   const [chapter, courses] = await Promise.all([
-    prisma.chapter.findUnique({ where: { id }, include: { course: { select: { id: true, title: true } } } }),
+    prisma.chapter.findUnique({ where: { id }, include: { course: { select: { id: true, slug: true, title: true } } } }),
     prisma.course.findMany({ orderBy: { title: 'asc' }, select: { id: true, title: true } }),
   ])
   if (!chapter) notFound()
@@ -41,7 +42,7 @@ export default async function EditChapterPage({
           { label: chapter.title.trim() },
         ]}
         actions={
-          <a href={`/cours/${chapter.courseId}/chapitre/${chapter.id}`} target="_blank" rel="noopener" className="adm-btn adm-btn-ghost">
+          <a href={chapterUrl(chapter.course.slug, chapter.id)} target="_blank" rel="noopener" className="adm-btn adm-btn-ghost">
             <ExternalLink size={15} aria-hidden="true" /> Voir sur le site
           </a>
         }

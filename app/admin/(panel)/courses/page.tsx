@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Prisma } from '@prisma/client'
 import { BookOpen, ExternalLink, ImageIcon, Paperclip, Pencil, Plus, Search } from 'lucide-react'
 import { prisma } from '@/lib/db'
+import { courseUrl } from '@/lib/urls'
 import { requireAdmin } from '@/lib/admin-auth'
 import { PAGE_SIZE, intParam, pageParam, param, sortParam, type SearchParams } from '@/lib/admin/list'
 import { DIFFICULTY_LABELS, formatDate } from '@/lib/admin/format'
@@ -37,7 +38,7 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
       select: {
-        id: true, title: true, logo: true, date: true, difficulty: true, available: true, supportUrl: true,
+        id: true, slug: true, title: true, logo: true, date: true, difficulty: true, available: true, supportUrl: true,
         category: { select: { title: true } },
         theme: { select: { title: true } },
         _count: { select: { chapters: true } },
@@ -121,7 +122,7 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
                     <td>
                       <div className="adm-actions">
                         <Link href={`/admin/courses/${course.id}`} className="adm-icon-btn" aria-label={`Modifier ${course.title.trim()}`} title="Modifier" prefetch={false}><Pencil size={16} aria-hidden="true" /></Link>
-                        <a href={`/cours/${course.id}`} target="_blank" rel="noopener" className="adm-icon-btn" aria-label="Voir sur le site" title="Voir sur le site"><ExternalLink size={16} aria-hidden="true" /></a>
+                        <a href={courseUrl(course.slug)} target="_blank" rel="noopener" className="adm-icon-btn" aria-label="Voir sur le site" title="Voir sur le site"><ExternalLink size={16} aria-hidden="true" /></a>
                         <ConfirmDelete
                           action={deleteCourse}
                           fields={{ id: course.id }}

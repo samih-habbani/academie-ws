@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { mediaSrc } from '@/lib/media'
+import { courseUrl } from '@/lib/urls'
 import { Difficulty } from '@prisma/client'
 
 const DIFFICULTY_LABELS: Record<Difficulty, string> = {
@@ -11,6 +12,7 @@ const DIFFICULTY_LABELS: Record<Difficulty, string> = {
 
 type CourseCardProps = {
   id: number
+  slug: string
   title: string
   logo: string
   difficulty: Difficulty | null
@@ -24,7 +26,7 @@ export default function CourseCard({ course }: { course: CourseCardProps }) {
   return (
     // prefetch={false} : pas de préchargement au scroll (une page entière par carte visible),
     // il se fait au survol de la carte.
-    <Link href={`/cours/${course.id}`} className="course-card" prefetch={false}>
+    <Link href={courseUrl(course.slug)} className="course-card" prefetch={false}>
       <div className="course-thumb">
         {course.logo ? (
           // Carte ≈ 280–362px de large dès 640px, pleine largeur (moins la marge) en dessous.

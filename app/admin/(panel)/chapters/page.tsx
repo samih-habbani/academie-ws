@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Prisma } from '@prisma/client'
 import { ExternalLink, ListVideo, Pencil, Plus, Search } from 'lucide-react'
 import { prisma } from '@/lib/db'
+import { chapterUrl } from '@/lib/urls'
 import { requireAdmin } from '@/lib/admin-auth'
 import { PAGE_SIZE, intParam, pageParam, param, sortParam, type SearchParams } from '@/lib/admin/list'
 import { CHAPTER_TYPE_LABELS } from '@/lib/admin/format'
@@ -56,7 +57,7 @@ export default async function ChaptersPage({ searchParams }: { searchParams: Pro
       take: PAGE_SIZE,
       select: {
         id: true, title: true, numOrder: true, type: true, duration: true, urlVideo: true, available: true, chapterPart: true, courseId: true,
-        course: { select: { id: true, title: true } },
+        course: { select: { id: true, slug: true, title: true } },
       },
     }),
     prisma.course.findMany({ orderBy: { title: 'asc' }, select: { id: true, title: true } }),
@@ -151,7 +152,7 @@ export default async function ChaptersPage({ searchParams }: { searchParams: Pro
                       <td>
                         <div className="adm-actions">
                           <Link href={edit} className="adm-icon-btn" aria-label={`Modifier ${chapter.title.trim()}`} title="Modifier" prefetch={false}><Pencil size={16} aria-hidden="true" /></Link>
-                          <a href={`/cours/${chapter.courseId}/chapitre/${chapter.id}`} target="_blank" rel="noopener" className="adm-icon-btn" aria-label="Voir sur le site" title="Voir sur le site"><ExternalLink size={16} aria-hidden="true" /></a>
+                          <a href={chapterUrl(chapter.course.slug, chapter.id)} target="_blank" rel="noopener" className="adm-icon-btn" aria-label="Voir sur le site" title="Voir sur le site"><ExternalLink size={16} aria-hidden="true" /></a>
                           <ConfirmDelete
                             action={deleteChapter}
                             fields={{ id: chapter.id, returnTo: here }}

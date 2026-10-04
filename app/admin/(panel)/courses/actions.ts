@@ -8,9 +8,11 @@ import {
   type FormState,
 } from '@/lib/admin/form'
 import { deleteBlobIfOwned } from '@/lib/admin/blob'
+import { resolveSlug, slugField } from '@/lib/admin/slug'
 
 const courseSchema = z.object({
   title: requiredText('Le titre'),
+  slug: slugField,
   description: z.string().trim().min(1, 'La description est obligatoire.').max(20000, 'La description est trop longue.'),
   categoryId: z.string().regex(/^\d+$/, 'Choisis une catégorie.').transform(Number),
   themeId: z.string().regex(/^\d*$/, 'Thématique invalide.').transform((v) => (v === '' ? null : Number(v))),
@@ -40,9 +42,10 @@ async function checkRelations(input: CourseInput): Promise<Record<string, string
   return Object.keys(errors).length ? errors : null
 }
 
-function toData(input: CourseInput, available: boolean) {
+function toData(input: CourseInput, slug: string, available: boolean) {
   return {
     title: input.title,
+    slug,
     description: input.description,
     logo: input.logo,
     date: new Date(`${input.date}T00:00:00.000Z`),
@@ -66,7 +69,10 @@ export async function createCourse(_prev: FormState, formData: FormData): Promis
   const relationErrors = await checkRelations(parsed.data)
   if (relationErrors) return failure(values, relationErrors)
 
-  const course = await prisma.course.create({ data: toData(parsed.data, values.available === 'on') })
+  const slug = await resolveSlug('course', parsed.data.slug, parsed.data.title)
+  if ('error' in slug) return failure(values, { slug: slug.error })
+
+  const course = await prisma.course.create({ data: toData(parsed.data, slug.slug, values.available === 'on') })
   revalidatePublic()
   redirectWithToast(`/admin/courses/${course.id}`, 'Cours créé. Tu peux maintenant lui ajouter des chapitres.')
 }
@@ -79,10 +85,13 @@ export async function updateCourse(id: number, _prev: FormState, formData: FormD
   const relationErrors = await checkRelations(parsed.data)
   if (relationErrors) return failure(values, relationErrors)
 
-  const existing = await prisma.course.findUnique({ where: { id }, select: { logo: true } })
+  const existing = await prisma.course.findUnique({ where: { id }, select: { logo: true, slug: true } })
   if (!existing) return failure(values, {}, 'Ce cours n’existe plus.')
 
-  await prisma.course.update({ where: { id }, data: toData(parsed.data, values.available === 'on') })
+  const slug = await resolveSlug('course', parsed.data.slug, parsed.data.title, { excludeId: id, current: existing.slug })
+  if ('error' in slug) return failure(values, { slug: slug.error })
+
+  await prisma.course.update({ where: { id }, data: toData(parsed.data, slug.slug, values.available === 'on') })
   if (existing.logo !== parsed.data.logo) await deleteBlobIfOwned(existing.logo)
   revalidatePublic()
   redirectWithToast(`/admin/courses/${id}`, 'Modifications enregistrées.')

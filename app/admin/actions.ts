@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { del } from '@vercel/blob'
 import { prisma } from '@/lib/db'
 import { createSession, destroySession, getAdmin, verifyAdminCredentials } from '@/lib/admin-auth'
+import { chapterUrl, courseUrl } from '@/lib/urls'
 import { isSupportBlobUrl } from '@/lib/support-files'
 
 // `email` est renvoyé pour le garder dans le champ : React 19 vide les champs après chaque action.
@@ -35,9 +36,11 @@ export async function logout() {
 
 /** Rafraîchit les pages publiques qui affichent le bouton de téléchargement (elles sont en cache ISR). */
 async function revalidateCoursePages(courseId: number) {
-  revalidatePath(`/cours/${courseId}`)
+  const course = await prisma.course.findUnique({ where: { id: courseId }, select: { slug: true } })
+  if (!course) return
+  revalidatePath(courseUrl(course.slug))
   const chapters = await prisma.chapter.findMany({ where: { courseId }, select: { id: true } })
-  for (const chapter of chapters) revalidatePath(`/cours/${courseId}/chapitre/${chapter.id}`)
+  for (const chapter of chapters) revalidatePath(chapterUrl(course.slug, chapter.id))
   revalidatePath('/admin')
 }
 

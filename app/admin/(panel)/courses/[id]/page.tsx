@@ -4,6 +4,7 @@ import { getDownloadUrl } from '@vercel/blob'
 import { ArrowDown, ArrowUp, ExternalLink, ListVideo, Pencil, Plus } from 'lucide-react'
 import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/admin-auth'
+import { courseUrl } from '@/lib/urls'
 import { CHAPTER_TYPE_LABELS, toDateInput } from '@/lib/admin/format'
 import { getYoutubeVideoId } from '@/lib/youtube'
 import { Alert, Badge, EmptyState, PageHeader, type Tone } from '../../../_components/ui'
@@ -51,7 +52,7 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
         subtitle={<>Cours n° {course.id} · {course.chapters.length} chapitre{course.chapters.length > 1 ? 's' : ''}</>}
         crumbs={[{ label: 'Cours', href: '/admin/courses' }, { label: course.title.trim() }]}
         actions={
-          <a href={`/cours/${course.id}`} target="_blank" rel="noopener" className="adm-btn adm-btn-ghost">
+          <a href={courseUrl(course.slug)} target="_blank" rel="noopener" className="adm-btn adm-btn-ghost">
             <ExternalLink size={15} aria-hidden="true" /> Voir sur le site
           </a>
         }
@@ -65,6 +66,7 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
         themes={themes.map((t) => ({ id: t.id, title: t.title, categoryTitle: t.category.title }))}
         initial={{
           title: course.title,
+          slug: course.slug,
           description: course.description,
           categoryId: String(course.categoryId),
           themeId: course.themeId ? String(course.themeId) : '',

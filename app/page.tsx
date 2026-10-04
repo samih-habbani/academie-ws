@@ -53,6 +53,7 @@ async function fetchData() {
           orderBy: { date: 'desc' },
           select: {
             id: true,
+            slug: true,
             title: true,
             logo: true,
             description: true,
@@ -60,7 +61,7 @@ async function fetchData() {
             duration: true,
             difficulty: true,
             chapterCount: true,
-            theme: { select: { id: true, title: true, description: true, img: true } },
+            theme: { select: { id: true, slug: true, title: true, description: true, img: true } },
           },
         },
       },
@@ -339,6 +340,7 @@ export default async function HomePage() {
                           key={`theme-${entry.theme.id}`}
                           theme={{
                             id: entry.theme.id,
+                            slug: entry.theme.slug,
                             title: entry.theme.title,
                             description: entry.theme.description,
                             img: entry.theme.img,

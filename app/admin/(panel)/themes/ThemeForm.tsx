@@ -5,7 +5,7 @@ import { emptyState, type FormState } from '@/lib/admin/form-state'
 import { FormAlert, FormBar, SelectField, TextArea, TextInput } from '../../_components/FormKit'
 import ImageField from '../../_components/ImageField'
 
-export type ThemeValues = { title: string; description: string; img: string; categoryId: string }
+export type ThemeValues = { title: string; slug: string; description: string; img: string; categoryId: string }
 
 export default function ThemeForm({
   action,
@@ -31,6 +31,8 @@ export default function ThemeForm({
           <div className="adm-card-head"><div className="adm-card-title">Thématique</div></div>
           <div className="adm-card-pad adm-fields">
             <TextInput name="title" label="Titre" required defaultValue={text('title')} error={err.title} maxLength={255} />
+            <TextInput name="slug" label="Adresse de la page (URL)" defaultValue={text('slug')} error={err.slug} maxLength={60}
+              placeholder="ex. python" hint="Page de la thématique : /theme/… — laisse vide pour la générer depuis le titre. Modifier l’URL d’une thématique déjà publiée casse ses anciens liens." />
             <TextArea name="description" label="Description" required rows={3} defaultValue={text('description')} error={err.description} maxLength={255}
               hint="Affichée sur la carte de la thématique et en tête de sa page." />
             <SelectField name="categoryId" label="Catégorie" required defaultValue={text('categoryId')} error={err.categoryId} placeholder="Choisir…"
