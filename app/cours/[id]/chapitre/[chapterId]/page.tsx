@@ -36,6 +36,9 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
 
   if (!course || !chapter) notFound()
 
+  // null si la valeur n'est pas une vraie référence YouTube (ancien bloc Vimeo, vide…) → « Vidéo non disponible ».
+  const embedUrl = chapter.urlVideo ? getYoutubeEmbedUrl(chapter.urlVideo) : null
+
   const allChapters = course.chapters
   const currentIdx = allChapters.findIndex(c => c.id === chapId)
   const prevChapter = currentIdx > 0 ? allChapters[currentIdx - 1] : null
@@ -71,9 +74,9 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
 
             {/* YouTube */}
             <div className="video-wrapper">
-              {chapter.urlVideo ? (
+              {embedUrl ? (
                 <iframe
-                  src={getYoutubeEmbedUrl(chapter.urlVideo)}
+                  src={embedUrl}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
