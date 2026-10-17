@@ -1,15 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { logout } from '@/app/login/actions'
 
 export default function Nav() {
   const [open, setOpen] = useState(false)
+  // Cookie témoin posé à la connexion (sans donnée sensible) : évite toute requête serveur
+  // et garde les pages publiques en cache. La vraie vérification se fait sur /profile.
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(null)
+  const pathname = usePathname()
+  useEffect(() => {
+    setLoggedIn(document.cookie.split('; ').includes('ws_in=1'))
+  }, [pathname])
   const close = () => setOpen(false)
   // Sur l'accueil, les liens vers « / » et « /#ancre » pointent vers la page courante :
   // les précharger ne sert à rien (3 requêtes inutiles).
-  const onHome = usePathname() === '/'
+  const onHome = pathname === '/'
   const homePrefetch = onHome ? false : undefined
 
   return (
@@ -43,6 +51,21 @@ export default function Nav() {
         <Link href="/#about" onClick={close} prefetch={homePrefetch}>À propos</Link>
         <Link href="/#formations" onClick={close} prefetch={homePrefetch}>Formations</Link>
         <Link href="/contact" onClick={close}>Contact</Link>
+        {loggedIn ? (
+          <>
+            <Link href="/dashboard" onClick={close} prefetch={false}>Tableau de bord</Link>
+            <Link href="/profile" onClick={close} prefetch={false}>Mon profil</Link>
+            <form action={logout} onSubmit={() => { setLoggedIn(false); close() }} className="nav-form">
+              <button type="submit" className="nav-btn nav-btn-ghost">Se déconnecter</button>
+            </form>
+          </>
+        ) : (
+          // Tant que l'état n'est pas connu (avant l'hydratation), les boutons gardent leur place sans s'afficher.
+          <>
+            <Link href="/login" onClick={close} className={`nav-btn nav-btn-ghost${loggedIn === null ? ' is-pending' : ''}`} prefetch={false}>Connexion</Link>
+            <Link href="/register" onClick={close} className={`nav-btn nav-btn-primary${loggedIn === null ? ' is-pending' : ''}`} prefetch={false}>S’inscrire</Link>
+          </>
+        )}
       </div>
     </nav>
   )

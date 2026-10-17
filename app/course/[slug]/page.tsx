@@ -8,6 +8,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { chapterUrl } from '@/lib/urls'
+import { ProgressProvider } from '@/components/progress/ProgressProvider'
+import ChapterStatus from '@/components/progress/ChapterStatus'
+import { CourseProgressBar } from '@/components/progress/ProgressSummary'
 
 // ISR : aucune page pré-générée au build, chaque cours est rendu à la 1re visite
 // puis servi depuis le cache et régénéré au plus toutes les heures.
@@ -84,6 +87,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         <Nav />
 
         <main style={{ flex: 1 }}>
+          <ProgressProvider courseId={course.id} chapterIds={course.chapters.map((c) => c.id)}>
           <div className="container">
 
             {/* BREADCRUMB */}
@@ -135,6 +139,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                     <div className="meta-item">📅 {new Date(course.date).toLocaleDateString('fr-FR')}</div>
                   )}
                 </div>
+                <CourseProgressBar />
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
@@ -190,6 +195,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
             )}
 
           </div>
+          </ProgressProvider>
         </main>
 
         <Footer />
@@ -219,6 +225,7 @@ function ChapterRow({ chapter, position, courseSlug }: {
       {chapter.duration && (
         <div style={{ fontSize: 12, color: 'var(--text-d)', flexShrink: 0 }}>{chapter.duration}</div>
       )}
+      <ChapterStatus chapterId={chapter.id} />
     </Link>
   )
 }

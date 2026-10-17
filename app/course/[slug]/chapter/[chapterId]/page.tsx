@@ -1,6 +1,10 @@
 import { prisma } from '@/lib/db'
 import Nav from '@/components/Nav'
 import StarCanvas from '@/components/StarCanvas'
+import VideoGate from '@/components/VideoGate'
+import { ProgressProvider } from '@/components/progress/ProgressProvider'
+import ChapterStatus from '@/components/progress/ChapterStatus'
+import { SidebarBar, SidebarCount } from '@/components/progress/ProgressSummary'
 import { supportDownloadUrl } from '@/lib/support-download'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -56,6 +60,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
       <div className="site-content" style={{ minHeight: '100vh' }}>
         <Nav />
 
+        <ProgressProvider courseId={course.id} chapterIds={allChapters.map((c) => c.id)}>
         <div className="lecture-layout">
 
           {/* MAIN: VIDEO + INFO */}
@@ -78,13 +83,8 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
             {/* YouTube */}
             <div className="video-wrapper">
               {embedUrl ? (
-                <iframe
-                  src={embedUrl}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  title={chapter.title}
-                />
+                // L'adresse de la vidéo n'est pas dans le HTML : VideoGate la demande à l'API (membres uniquement).
+                <VideoGate chapterId={chapter.id} title={chapter.title} />
               ) : (
                 <div style={{
                   position: 'absolute', inset: 0, display: 'flex',
@@ -143,17 +143,10 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           <aside className="lecture-sidebar">
             <div className="sidebar-header">
               <h2>Chapitres</h2>
-              <span className="sidebar-progress">{allChapters.length} leçons</span>
+              <SidebarCount />
             </div>
 
-            <div style={{ height: 3, background: 'rgba(255,255,255,.05)' }}>
-              <div style={{
-                height: '100%',
-                width: `${Math.round(((currentIdx + 1) / allChapters.length) * 100)}%`,
-                background: 'linear-gradient(90deg,var(--purple),var(--cyan))',
-                transition: 'width 1s ease',
-              }} />
-            </div>
+            <SidebarBar fallbackPercent={Math.round(((currentIdx + 1) / allChapters.length) * 100)} />
 
             <div className="sidebar-list">
               {allChapters.map((ch, idx) => {
@@ -172,6 +165,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                       <div className="chapter-name" style={{ fontSize: 13 }}>{ch.title}</div>
                       {ch.duration && <div className="chapter-dur">{ch.duration}</div>}
                     </div>
+                    <ChapterStatus chapterId={ch.id} />
                   </Link>
                 )
               })}
@@ -179,6 +173,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           </aside>
 
         </div>
+        </ProgressProvider>
       </div>
     </>
   )

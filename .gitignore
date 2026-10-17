@@ -44,3 +44,6 @@ next-env.d.ts
 
 # claude code runtime state
 .claude/scheduled_tasks.lock
+
+# sauvegardes locales des scripts d'administration
+/.backups/

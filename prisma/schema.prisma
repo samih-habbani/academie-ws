@@ -87,6 +87,7 @@ model Chapter {
   numOrder    Int      @map("num_order")
   description String?  @db.Text
   material    String?
+  progress    VideoProgress[]
 
   @@index([courseId, available])
   @@map("chapter")
@@ -97,6 +98,12 @@ model User {
   email    String @unique
   password String
   roles    Json
+  firstName String?  @map("first_name")
+  lastName  String?  @map("last_name")
+  phone     String?
+  bio       String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  progress  VideoProgress[]
 
   @@map("user")
 }
@@ -115,3 +122,20 @@ model Contact {
   @@map("contact")
 }
 
+
+/// Position de lecture d'un membre dans la vidéo d'un chapitre (reprise + « vu / en cours »).
+model VideoProgress {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  chapterId Int      @map("chapter_id")
+  seconds   Int      @default(0)
+  duration  Int      @default(0)
+  completed Boolean  @default(false)
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, chapterId])
+  @@index([chapterId])
+  @@map("video_progress")
+}
