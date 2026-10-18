@@ -13,6 +13,8 @@ const COOKIE_NAME = 'user_session'
 // Cookie « témoin » lisible par le navigateur, sans donnée sensible : permet à la barre de
 // navigation d'afficher « Mon profil » sans interroger le serveur (les pages publiques restent en cache).
 export const FLAG_COOKIE = 'ws_in'
+// Idem : indique à la barre de navigation d'afficher le lien « Back-office » (affichage seulement, aucun droit).
+export const ADMIN_FLAG_COOKIE = 'ws_admin'
 const SESSION_DAYS = 14
 
 // Hash argon2id factice : même temps de calcul quand l'email n'existe pas (pas de devinette de comptes).
@@ -40,6 +42,8 @@ export type SessionUser = {
   createdAt: Date
   audioTipDismissed: boolean
   isAdmin: boolean
+  /** Début de la session de membre (secondes Unix) : sert à autoriser le passage direct au back-office. */
+  sessionStartedAt: number
 }
 
 /** Vérifie email + mot de passe. Renvoie le compte (id + hash) ou null. */
@@ -57,7 +61,7 @@ export async function verifyUserCredentials(email: string, password: string) {
   return user && ok ? user : null
 }
 
-export async function createUserSession(user: { id: number; password: string }) {
+export async function createUserSession(user: { id: number; password: string; isAdmin?: boolean }) {
   const token = await new SignJWT({ ps: stamp(user.password) })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(String(user.id))
@@ -71,12 +75,15 @@ export async function createUserSession(user: { id: number; password: string }) 
   const store = await cookies()
   store.set(COOKIE_NAME, token, { httpOnly: true, secure, sameSite: 'lax', path: '/', maxAge })
   store.set(FLAG_COOKIE, '1', { httpOnly: false, secure, sameSite: 'lax', path: '/', maxAge })
+  if (user.isAdmin) store.set(ADMIN_FLAG_COOKIE, '1', { httpOnly: false, secure, sameSite: 'lax', path: '/', maxAge })
+  else store.delete(ADMIN_FLAG_COOKIE)
 }
 
 export async function destroyUserSession() {
   const store = await cookies()
   store.delete(COOKIE_NAME)
   store.delete(FLAG_COOKIE)
+  store.delete(ADMIN_FLAG_COOKIE)
 }
 
 /** Utilisateur connecté (revérifié en base à chaque requête), ou null. Mémoïsé par requête. */
@@ -93,7 +100,7 @@ export const getUser = cache(async (): Promise<SessionUser | null> => {
     })
     if (!user || payload.ps !== stamp(user.password)) return null
     const { password: _password, roles, ...rest } = user
-    return { ...rest, isAdmin: Array.isArray(roles) && roles.includes('ROLE_ADMIN') }
+    return { ...rest, isAdmin: Array.isArray(roles) && roles.includes('ROLE_ADMIN'), sessionStartedAt: Number(payload.iat ?? 0) }
   } catch {
     return null
   }

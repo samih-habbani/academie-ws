@@ -876,3 +876,4 @@ body {
   .course-filter select { flex: 1 1 100%; }
   .course-filter-count { margin-left: 0; width: 100%; }
 }
+.nav-links a.nav-admin-link { color: var(--purple-l); font-weight: 700; }

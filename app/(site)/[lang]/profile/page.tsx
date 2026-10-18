@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import AccountShell from '@/components/auth/AccountShell'
+import AdminFlagSync from '@/components/AdminFlagSync'
 import { requireUser } from '@/lib/user-auth'
 import { logout } from '@/lib/auth-actions'
 import { fmt, hasLang, INTL_LOCALE, localizePath } from '@/lib/i18n/config'
@@ -26,6 +27,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   return (
     <AccountShell lang={lang} width={720}>
+      <AdminFlagSync isAdmin={user.isAdmin} />
       {welcome && <div className="auth-alert auth-alert-ok" role="status">{t.profile.welcome}</div>}
 
       <div className="profile-head">
@@ -37,6 +39,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           </p>
         </div>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          {user.isAdmin && (
+            <>
+              <a href="/admin/enter?next=/admin/ideas" className="btn btn-ghost btn-sm">{t.profile.adminIdeas}</a>
+              <a href="/admin/enter" className="btn btn-primary btn-sm">{t.profile.adminPanel}</a>
+            </>
+          )}
           <Link href={localizePath(lang, '/dashboard')} className="btn btn-ghost btn-sm" prefetch={false}>{t.profile.dashboard}</Link>
           <form action={logout}>
             <input type="hidden" name="lang" value={lang} />

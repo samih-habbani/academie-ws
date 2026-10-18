@@ -23,7 +23,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     return { error: t.incorrect, email }
   }
 
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: found.id }, select: { id: true, password: true } })
-  await createUserSession(user)
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: found.id }, select: { id: true, password: true, roles: true } })
+  await createUserSession({ id: user.id, password: user.password, isAdmin: Array.isArray(user.roles) && user.roles.includes('ROLE_ADMIN') })
   redirect(safeNext(formData.get('next'), localizePath(lang, '/profile')))
 }

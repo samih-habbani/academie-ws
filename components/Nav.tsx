@@ -13,9 +13,12 @@ export default function Nav() {
   // Cookie témoin posé à la connexion (sans donnée sensible) : évite toute requête serveur
   // et garde les pages publiques en cache. La vraie vérification se fait sur /profile.
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const pathname = usePathname()
   useEffect(() => {
-    setLoggedIn(document.cookie.split('; ').includes('ws_in=1'))
+    const cookies = document.cookie.split('; ')
+    setLoggedIn(cookies.includes('ws_in=1'))
+    setIsAdmin(cookies.includes('ws_admin=1'))
   }, [pathname])
   const close = () => setOpen(false)
   // Sur l'accueil, les liens vers « / » et « /#ancre » pointent vers la page courante :
@@ -56,9 +59,10 @@ export default function Nav() {
         <Link href={href('/contact')} onClick={close}>{t.nav.contact}</Link>
         {loggedIn ? (
           <>
+            {isAdmin && <a href="/admin/enter" onClick={close} className="nav-admin-link">{t.nav.admin}</a>}
             <Link href={href('/dashboard')} onClick={close} prefetch={false}>{t.nav.dashboard}</Link>
             <Link href={href('/profile')} onClick={close} prefetch={false}>{t.nav.profile}</Link>
-            <form action={logout} onSubmit={() => { setLoggedIn(false); close() }} className="nav-form">
+            <form action={logout} onSubmit={() => { setLoggedIn(false); setIsAdmin(false); close() }} className="nav-form">
               <input type="hidden" name="lang" value={lang} />
               <button type="submit" className="nav-btn nav-btn-ghost">{t.nav.logout}</button>
             </form>

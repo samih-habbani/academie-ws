@@ -70,7 +70,7 @@ export async function changePassword(_prev: FormState, formData: FormData): Prom
 
   const updated = await prisma.user.update({ where: { id: user.id }, data: { password: await hash(parsed.data.password) }, select: { id: true, password: true } })
   // Le changement invalide les autres sessions ; on rouvre celle de cet appareil.
-  await createUserSession(updated)
+  await createUserSession({ ...updated, isAdmin: user.isAdmin })
   return { ok: true, message: t.passwordChanged, errors: {}, values: {} }
 }
 
