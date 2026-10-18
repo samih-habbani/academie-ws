@@ -4,8 +4,7 @@ import { mediaSrc } from '@/lib/media'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import StarCanvas from '@/components/StarCanvas'
-import CourseCard from '@/components/CourseCard'
-import ThemeCard from '@/components/ThemeCard'
+import CourseBrowser, { type BrowserCategory } from '@/components/CourseBrowser'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { hasLang, localizePath, type Lang } from '@/lib/i18n/config'
@@ -15,39 +14,6 @@ import { alternatesFor } from '@/lib/i18n/metadata'
 
 // Page statique régénérée toutes les heures (ISR) au lieu d'une requête BDD par visite.
 export const revalidate = 3600
-
-type CategoryWithCourses = Awaited<ReturnType<typeof fetchData>>['categories']
-type CourseItem = CategoryWithCourses[number]['courses'][number]
-type ThemeOfCourse = NonNullable<CourseItem['theme']>
-
-type GridEntry =
-  | { kind: 'course'; date: Date; course: CourseItem }
-  | { kind: 'theme'; date: Date; theme: ThemeOfCourse; courses: CourseItem[] }
-
-function groupByTheme(courses: CourseItem[]): GridEntry[] {
-  const themeGroups = new Map<number, { theme: ThemeOfCourse; courses: CourseItem[] }>()
-  const entries: GridEntry[] = []
-
-  for (const course of courses) {
-    if (course.theme) {
-      const group = themeGroups.get(course.theme.id)
-      if (group) {
-        group.courses.push(course)
-      } else {
-        themeGroups.set(course.theme.id, { theme: course.theme, courses: [course] })
-      }
-    } else {
-      entries.push({ kind: 'course', date: course.date, course })
-    }
-  }
-
-  for (const { theme, courses: themeCourses } of themeGroups.values()) {
-    const mostRecentDate = themeCourses.reduce((max, c) => (c.date > max ? c.date : max), themeCourses[0].date)
-    entries.push({ kind: 'theme', date: mostRecentDate, theme, courses: themeCourses })
-  }
-
-  return entries.sort((a, b) => b.date.getTime() - a.date.getTime())
-}
 
 async function fetchData() {
   const [categories, totalCourses] = await Promise.all([
@@ -99,12 +65,35 @@ export default async function HomePage({ params }: Props) {
     course: categories.flatMap((c) => c.courses.map((co) => co.id)),
     theme: categories.flatMap((c) => c.courses.flatMap((co) => (co.theme ? [co.theme.id] : []))),
   })
-  const localCourse = (c: CourseItem) => ({
-    ...c,
-    title: tr('course', c.id, 'title', c.title),
-    description: tr('course', c.id, 'description', c.description),
-    theme: c.theme ? { ...c.theme, title: tr('theme', c.theme.id, 'title', c.theme.title) } : null,
-  })
+  // Données sérialisables pour le composant client de filtre (titres déjà traduits).
+  const browserCategories: BrowserCategory[] = categories
+    .filter((c) => c.courses.length > 0)
+    .map((cat) => ({
+      id: cat.id,
+      title: tr('category', cat.id, 'title', cat.title),
+      description: tr('category', cat.id, 'description', cat.description),
+      logo: cat.logo,
+      courses: cat.courses.map((c) => ({
+        id: c.id,
+        slug: c.slug,
+        title: tr('course', c.id, 'title', c.title),
+        description: tr('course', c.id, 'description', c.description),
+        logo: c.logo,
+        dateMs: c.date.getTime(),
+        duration: c.duration,
+        difficulty: c.difficulty,
+        chapterCount: c.chapterCount,
+        theme: c.theme
+          ? {
+              id: c.theme.id,
+              slug: c.theme.slug,
+              title: tr('theme', c.theme.id, 'title', c.theme.title),
+              description: tr('theme', c.theme.id, 'description', c.theme.description),
+              img: c.theme.img,
+            }
+          : null,
+      })),
+    }))
 
   return (
     <>
@@ -325,65 +314,12 @@ export default async function HomePage({ params }: Props) {
             </div>
           </section>
 
-          {/* FORMATIONS PAR CATÉGORIE */}
+          {/* FORMATIONS : filtrables par catégorie, thématique ou nom (tout est affiché par défaut) */}
           <section id="formations" style={{ padding: '64px 0' }}>
             <div className="container">
-              {categories.filter(c => c.courses.length > 0).map((cat) => (
-                <div key={cat.id} style={{ marginBottom: 64 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
-                    <div style={{
-                      width: 48, height: 48, borderRadius: 12,
-                      background: 'rgba(124,58,237,.15)',
-                      border: '1px solid rgba(124,58,237,.25)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0,
-                    }}>
-                      {cat.logo ? (
-                        <Image
-                          src={mediaSrc('categories', cat.logo)}
-                          alt=""
-                          width={28}
-                          height={28}
-                          quality={70}
-                          style={{ width: 28, height: 28, objectFit: 'contain' }}
-                        />
-                      ) : (
-                        <span style={{ fontSize: 20 }}>📚</span>
-                      )}
-                    </div>
-                    <div>
-                      <h2 className="section-title" style={{ marginBottom: 2 }}>{tr('category', cat.id, 'title', cat.title)}</h2>
-                      {cat.description && (
-                        <p style={{ fontSize: 14, color: 'var(--text-d)' }}>{tr('category', cat.id, 'description', cat.description)}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="courses-grid">
-                    {groupByTheme(cat.courses).map((entry) =>
-                      entry.kind === 'theme' ? (
-                        <ThemeCard
-                          key={`theme-${entry.theme.id}`}
-                          theme={{
-                            id: entry.theme.id,
-                            slug: entry.theme.slug,
-                            title: tr('theme', entry.theme.id, 'title', entry.theme.title),
-                            description: tr('theme', entry.theme.id, 'description', entry.theme.description),
-                            img: entry.theme.img,
-                            courseCount: entry.courses.length,
-                          }}
-                          lang={lang}
-                        />
-                      ) : (
-                        <CourseCard key={entry.course.id} course={localCourse(entry.course)} lang={lang} />
-                      )
-                    )}
-                  </div>
-                </div>
-              ))}
+              <CourseBrowser categories={browserCategories} />
             </div>
           </section>
-
 
         </main>
 

@@ -47,6 +47,18 @@ export const en: Dict = {
     bio2Strong: 'free',
     bio2After: ', with no barriers: a simple account is all you need to watch the videos.',
   },
+  filter: {
+    label: 'Filter the courses',
+    search: 'Search for a course…',
+    category: 'Category',
+    allCategories: 'All categories',
+    theme: 'Topic',
+    allThemes: 'All topics',
+    reset: 'Reset',
+    results_one: '{n} course',
+    results_other: '{n} courses',
+    none: 'No course matches your selection.',
+  },
   course: {
     chapters_one: '{n} chapter',
     chapters_other: '{n} chapters',

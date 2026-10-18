@@ -46,6 +46,18 @@ export const fr = {
     bio2Strong: 'gratuit',
     bio2After: ', sans barrière : un simple compte suffit pour regarder les vidéos.',
   },
+  filter: {
+    label: 'Filtrer les formations',
+    search: 'Rechercher une formation…',
+    category: 'Catégorie',
+    allCategories: 'Toutes les catégories',
+    theme: 'Thématique',
+    allThemes: 'Toutes les thématiques',
+    reset: 'Réinitialiser',
+    results_one: '{n} formation',
+    results_other: '{n} formations',
+    none: 'Aucune formation ne correspond à ta sélection.',
+  },
   course: {
     chapters_one: '{n} chapitre',
     chapters_other: '{n} chapitres',
