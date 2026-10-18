@@ -50,7 +50,7 @@ export const fr = {
   },
   programs: {
     navTitle: 'Programmes',
-    title: 'Nos programmes de formation',
+    title: 'Mes programmes de formation',
     lead: 'Des programmes complets, prêts à être déployés dans votre entreprise ou votre centre de formation : public visé, découpage, outils, ateliers et certifications.',
     search: 'Rechercher un programme…',
     allDomains: 'Tous les domaines',

@@ -51,7 +51,7 @@ export const en: Dict = {
   },
   programs: {
     navTitle: 'Programs',
-    title: 'Our training programs',
+    title: 'My training programs',
     lead: 'Complete programs ready to be delivered in your company or training center: target audience, schedule, tools, workshops and certifications.',
     search: 'Search for a program…',
     allDomains: 'All fields',
