@@ -8,7 +8,7 @@ import { MAX_IMAGE_BYTES, extensionOf, safeFileName } from '@/lib/support-files'
 import { Field } from './FormKit'
 
 /** Largeur maximale après réduction : les cartes du site font ≤ 362 px (×2 pour les écrans Retina). */
-const MAX_WIDTH: Record<MediaFolder, number> = { courses: 960, themes: 960, categories: 480 }
+const MAX_WIDTH: Record<MediaFolder, number> = { courses: 960, themes: 960, categories: 480, programs: 1200, tools: 240, certifications: 240 }
 
 /** Réduit et convertit l'image en WebP dans le navigateur : les images sont servies telles quelles, elles doivent être légères. */
 async function toLightImage(file: File, maxWidth: number): Promise<Blob> {

@@ -330,3 +330,23 @@
 .adm-idea-add { display: flex; gap: 10px; }
 .adm-idea-add input { flex: 1; min-width: 0; }
 @media (max-width: 560px) { .adm-ideas { grid-template-columns: 1fr; } .adm-idea-links img, .adm-idea-noimg { width: 84px; } .adm-idea-add { flex-direction: column; } }
+
+/* PROGRAMMES B2B : éditeur de modules, cases à cocher */
+.adm-mod-total { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; padding: 10px 14px; border-radius: 10px; background: rgba(124, 58, 237, 0.1); border: 1px solid rgba(124, 58, 237, 0.25); }
+.adm-mod { border: 1px solid var(--border); border-radius: 12px; background: rgba(255, 255, 255, 0.02); }
+.adm-mod-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; }
+.adm-mod-toggle { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; background: none; border: none; color: inherit; cursor: pointer; padding: 6px 4px; text-align: left; font: inherit; }
+.adm-mod-num { width: 26px; height: 26px; border-radius: 50%; background: rgba(124, 58, 237, 0.2); color: var(--purple-l); font-weight: 700; font-size: 12.5px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.adm-mod-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-mod-group { font-size: 11.5px; padding: 2px 8px; border-radius: 100px; background: rgba(34, 211, 238, 0.1); color: var(--cyan); border: 1px solid rgba(34, 211, 238, 0.2); white-space: nowrap; }
+.adm-mod-body { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--border); padding-top: 14px; }
+.adm-mod-field { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--text-m); }
+.adm-mod-field input, .adm-mod-field textarea { background: rgba(4, 3, 13, 0.5); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font: inherit; font-weight: 400; font-size: 14px; }
+.adm-mod-field input:focus, .adm-mod-field textarea:focus { outline: none; border-color: var(--purple-l); }
+.adm-mod-workshops { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 10px; background: rgba(34, 211, 238, 0.04); border: 1px dashed rgba(34, 211, 238, 0.25); }
+.adm-mod-ws-head { display: flex; justify-content: space-between; align-items: center; }
+.adm-ws { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); }
+.adm-ws-foot { display: flex; align-items: flex-end; gap: 10px; }
+.adm-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; }
+.adm-check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer; }
+.adm-check input { accent-color: var(--purple); }

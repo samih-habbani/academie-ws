@@ -1,4 +1,4 @@
-export type MediaFolder = 'courses' | 'categories' | 'themes'
+export type MediaFolder = 'courses' | 'categories' | 'themes' | 'programs' | 'tools' | 'certifications'
 
 /**
  * Une image est soit un nom de fichier rangé dans /public/uploads/images/<dossier>/ (cas historique),

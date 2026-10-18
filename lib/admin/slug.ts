@@ -9,13 +9,16 @@ export const slugField = z
   .max(60, 'L’URL : 60 caractères maximum.')
   .refine((v) => v === '' || SLUG_REGEX.test(v), 'L’URL ne peut contenir que des minuscules, des chiffres et des tirets (ex. python-poo).')
 
-type Model = 'course' | 'theme'
+type Model = 'course' | 'theme' | 'program'
 
 async function takenSlugs(model: Model, excludeId?: number): Promise<Set<string>> {
   const where = excludeId ? { id: { not: excludeId } } : {}
-  const rows = model === 'course'
-    ? await prisma.course.findMany({ where, select: { slug: true } })
-    : await prisma.theme.findMany({ where, select: { slug: true } })
+  const rows =
+    model === 'course'
+      ? await prisma.course.findMany({ where, select: { slug: true } })
+      : model === 'theme'
+        ? await prisma.theme.findMany({ where, select: { slug: true } })
+        : await prisma.program.findMany({ where, select: { slug: true } })
   return new Set(rows.map((r) => r.slug))
 }
 

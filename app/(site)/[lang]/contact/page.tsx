@@ -14,6 +14,13 @@ export default function ContactPage() {
   const { lang, t, href } = useI18n()
   const [state, formAction, isPending] = useActionState(submitContact, initialState)
   const formRef = useRef<HTMLFormElement>(null)
+  const subjectRef = useRef<HTMLInputElement>(null)
+
+  // Arrivée depuis une fiche programme : le sujet est déjà rempli (?subject=…).
+  useEffect(() => {
+    const subject = new URLSearchParams(location.search).get('subject')
+    if (subject && subjectRef.current && !subjectRef.current.value) subjectRef.current.value = subject.slice(0, 200)
+  }, [])
 
   useEffect(() => {
     if (state.status === 'success') formRef.current?.reset()
@@ -70,7 +77,7 @@ export default function ContactPage() {
 
               <div className="form-field">
                 <label htmlFor="subject">{t.contact.subject} *</label>
-                <input id="subject" name="subject" type="text" required />
+                <input ref={subjectRef} id="subject" name="subject" type="text" required />
               </div>
 
               <div className="form-field">

@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  BookOpen, ExternalLink, Folders, Inbox, LayoutDashboard, Lightbulb, ListVideo, LogOut, Menu, Tags, Users, X,
+  Award, BookOpen, ExternalLink, Folders, GraduationCap, Inbox, LayoutDashboard, Lightbulb, ListVideo, LogOut, Menu, Tags, Users, Wrench, X,
   type LucideIcon,
 } from 'lucide-react'
 import { logout } from '../actions'
@@ -16,6 +16,14 @@ type NavGroup = { label: string | null; items: NavItem[] }
 const NAV: NavGroup[] = [
   { label: null, items: [{ href: '/admin', label: 'Tableau de bord', icon: LayoutDashboard, exact: true }] },
   { label: 'Mon espace', items: [{ href: '/admin/ideas', label: 'Idées de vidéos', icon: Lightbulb }] },
+  {
+    label: 'Programmes B2B',
+    items: [
+      { href: '/admin/programs', label: 'Programmes', icon: GraduationCap },
+      { href: '/admin/tools', label: 'Outils', icon: Wrench },
+      { href: '/admin/certifications', label: 'Certifications', icon: Award },
+    ],
+  },
   {
     label: 'Contenu',
     items: [

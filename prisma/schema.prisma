@@ -67,6 +67,7 @@ model Course {
   supportUrl     String?     @map("support_url")
   supportName    String?     @map("support_name")
   chapters       Chapter[]
+  programs       Program[]
 
   @@index([categoryId, available])
   @@index([themeId, available])
@@ -187,4 +188,97 @@ model VideoIdeaLink {
 
   @@index([ideaId])
   @@map("video_idea_link")
+}
+
+/// Programme de formation proposé aux clients B2B / centres de formation (catalogue public).
+model Program {
+  id              Int             @id @default(autoincrement())
+  slug            String          @unique
+  title           String
+  tagline         String          @default("")
+  summary         String          @default("") @db.Text
+  domain          String          @default("web")        // web | data | design | marketing | systems | other
+  level           String?                                // debutant | intermediaire | confirme
+  coverImage      String          @default("") @map("cover_image")
+  audience        String          @default("") @db.Text
+  prerequisites   String          @default("") @db.Text
+  objectives      String[]
+  outcomes        String[]
+  formats         String[]                               // presentiel | distanciel | mixte
+  maxParticipants Int?            @map("max_participants")
+  hoursPerDay     Int             @default(7) @map("hours_per_day")
+  teachingMethods String          @default("") @db.Text @map("teaching_methods")
+  evaluation      String          @default("") @db.Text
+  equipment       String          @default("") @db.Text
+  resources       String          @default("") @db.Text
+  priceAmount     Int?            @map("price_amount")   // € HT
+  priceUnit       String          @default("") @map("price_unit")
+  showPrice       Boolean         @default(false) @map("show_price")
+  status          String          @default("draft")      // draft | published
+  position        Int             @default(0)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  modules         ProgramModule[]
+  tools           Tool[]
+  certifications  Certification[]
+  courses         Course[]
+
+  @@index([status, position])
+  @@map("program")
+}
+
+model ProgramModule {
+  id        Int               @id @default(autoincrement())
+  programId Int               @map("program_id")
+  position  Int               @default(0)
+  group     String            @default("")   // regroupement affiché (ex. « Bloc 1 — Front-end », « Jour 1 »)
+  title     String
+  hours     Float             @default(0)
+  content   String            @default("") @db.Text
+  method    String            @default("")
+  program   Program           @relation(fields: [programId], references: [id], onDelete: Cascade)
+  workshops ProgramWorkshop[]
+
+  @@index([programId, position])
+  @@map("program_module")
+}
+
+model ProgramWorkshop {
+  id          Int           @id @default(autoincrement())
+  moduleId    Int           @map("module_id")
+  position    Int           @default(0)
+  title       String
+  hours       Float         @default(0)
+  description String        @default("") @db.Text
+  deliverable String        @default("")
+  module      ProgramModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@index([moduleId, position])
+  @@map("program_workshop")
+}
+
+/// Bibliothèque d'outils réutilisables dans les programmes.
+model Tool {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  logo     String    @default("")
+  url      String    @default("")
+  programs Program[]
+
+  @@map("tool")
+}
+
+/// Bibliothèque de certifications (préparées ou délivrées) réutilisables dans les programmes.
+model Certification {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  issuer      String    @default("")
+  reference   String    @default("")   // ex. code RNCP
+  level       String    @default("")
+  description String    @default("") @db.Text
+  url         String    @default("")
+  logo        String    @default("")
+  programs    Program[]
+
+  @@map("certification")
 }

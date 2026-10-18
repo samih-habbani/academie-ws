@@ -36,12 +36,12 @@ const BLOB_HOST_SUFFIX = '.public.blob.vercel-storage.com'
 
 // --- Images (logos de cours / catégories / thèmes) téléversées depuis le back-office ---
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024 // 5 Mo (le navigateur les réduit en WebP avant l'envoi)
-export const IMAGE_FOLDERS = ['courses', 'categories', 'themes'] as const
+export const IMAGE_FOLDERS = ['courses', 'categories', 'themes', 'programs', 'tools', 'certifications'] as const
 export type ImageFolder = (typeof IMAGE_FOLDERS)[number]
 export const IMAGE_CONTENT_TYPES = ['image/webp', 'image/png', 'image/jpeg', 'image/avif', 'image/gif']
 export const IMAGE_EXTENSIONS = ['webp', 'png', 'jpg', 'jpeg', 'avif', 'gif']
 /** Chemin attendu dans le stockage : images/<courses|categories|themes>/<nom>.<ext> */
-export const IMAGE_PATH_REGEX = /^images\/(courses|categories|themes)\/[A-Za-z0-9._() -]{1,120}$/
+export const IMAGE_PATH_REGEX = /^images\/(courses|categories|themes|programs|tools|certifications)\/[A-Za-z0-9._() -]{1,120}$/
 
 /** Vrai si l'URL est en https sur un store Vercel Blob public (sans identifiants dans l'URL). */
 export function isOwnBlobUrl(url: string): boolean {

@@ -42,6 +42,8 @@ export function revalidatePublic() {
   revalidatePath('/[lang]/course/[slug]', 'page')
   revalidatePath('/[lang]/course/[slug]/chapter/[chapterId]', 'page')
   revalidatePath('/[lang]/theme/[slug]', 'page')
+  revalidatePath('/[lang]/programs', 'page')
+  revalidatePath('/[lang]/programs/[slug]', 'page')
 }
 
 export const requiredText = (label: string, max = 255) =>

@@ -56,6 +56,7 @@ export default function Nav() {
       <div className={`nav-links${open ? ' is-open' : ''}`}>
         <Link href={`${href('/')}#about`} onClick={close} prefetch={homePrefetch}>{t.nav.about}</Link>
         <Link href={`${href('/')}#formations`} onClick={close} prefetch={homePrefetch}>{t.nav.courses}</Link>
+        <Link href={href('/programs')} onClick={close}>{t.nav.programs}</Link>
         <Link href={href('/contact')} onClick={close}>{t.nav.contact}</Link>
         {loggedIn ? (
           <>
