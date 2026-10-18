@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto'
 import { SignJWT, jwtVerify } from 'jose'
 import { verify } from '@node-rs/argon2'
 import { prisma } from '@/lib/db'
+import { localizePath, type Lang } from '@/lib/i18n/config'
 
 // Session des visiteurs inscrits. Cookie distinct de celui du back-office (`admin_session`) :
 // un jeton utilisateur ne donne jamais accès à /admin, et inversement.
@@ -37,6 +38,7 @@ export type SessionUser = {
   phone: string | null
   bio: string | null
   createdAt: Date
+  audioTipDismissed: boolean
   isAdmin: boolean
 }
 
@@ -87,7 +89,7 @@ export const getUser = cache(async (): Promise<SessionUser | null> => {
     if (!Number.isInteger(id)) return null
     const user = await prisma.user.findUnique({
       where: { id },
-      select: { id: true, email: true, password: true, roles: true, firstName: true, lastName: true, phone: true, bio: true, createdAt: true },
+      select: { id: true, email: true, password: true, roles: true, firstName: true, lastName: true, phone: true, bio: true, createdAt: true, audioTipDismissed: true },
     })
     if (!user || payload.ps !== stamp(user.password)) return null
     const { password: _password, roles, ...rest } = user
@@ -98,9 +100,9 @@ export const getUser = cache(async (): Promise<SessionUser | null> => {
 })
 
 /** À appeler en haut de chaque page protégée ET dans chaque action serveur. */
-export async function requireUser(next = '/profile'): Promise<SessionUser> {
+export async function requireUser(next = '/profile', lang: Lang = 'fr'): Promise<SessionUser> {
   const user = await getUser()
-  if (!user) redirect(`/login?next=${encodeURIComponent(next)}`)
+  if (!user) redirect(`${localizePath(lang, '/login')}?next=${encodeURIComponent(next)}`)
   return user
 }
 

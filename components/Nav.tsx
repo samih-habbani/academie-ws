@@ -3,9 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { logout } from '@/app/login/actions'
+import { logout } from '@/lib/auth-actions'
+import { useI18n } from '@/components/I18nProvider'
+import { LANGS, localizePath, stripLang } from '@/lib/i18n/config'
 
 export default function Nav() {
+  const { lang, t, href } = useI18n()
   const [open, setOpen] = useState(false)
   // Cookie témoin posé à la connexion (sans donnée sensible) : évite toute requête serveur
   // et garde les pages publiques en cache. La vraie vérification se fait sur /profile.
@@ -17,12 +20,12 @@ export default function Nav() {
   const close = () => setOpen(false)
   // Sur l'accueil, les liens vers « / » et « /#ancre » pointent vers la page courante :
   // les précharger ne sert à rien (3 requêtes inutiles).
-  const onHome = pathname === '/'
+  const onHome = stripLang(pathname) === '/'
   const homePrefetch = onHome ? false : undefined
 
   return (
     <nav className="nav-futuriste" role="navigation">
-      <Link href="/" className="nav-logo" onClick={close} prefetch={homePrefetch}>
+      <Link href={href('/')} className="nav-logo" onClick={close} prefetch={homePrefetch}>
         <svg width="36" height="40" viewBox="0 0 36 40" fill="none" aria-hidden="true">
           <polygon points="18,2 34,11 34,29 18,38 2,29 2,11" fill="#7C3AED" stroke="rgba(167,139,250,.35)" strokeWidth=".8"/>
           <path d="M18 10 C15.5 13.5 14 18 14 22 L16.2 22 L16.2 25.5 C16.2 26.3 17 27 18 27 C19 27 19.8 26.3 19.8 25.5 L19.8 22 L22 22 C22 18 20.5 13.5 18 10Z" fill="white" opacity=".95"/>
@@ -38,7 +41,7 @@ export default function Nav() {
       <button
         type="button"
         className="nav-toggle"
-        aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
+        aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
         aria-expanded={open}
         onClick={() => setOpen(o => !o)}
       >
@@ -48,24 +51,41 @@ export default function Nav() {
       </button>
 
       <div className={`nav-links${open ? ' is-open' : ''}`}>
-        <Link href="/#about" onClick={close} prefetch={homePrefetch}>À propos</Link>
-        <Link href="/#formations" onClick={close} prefetch={homePrefetch}>Formations</Link>
-        <Link href="/contact" onClick={close}>Contact</Link>
+        <Link href={`${href('/')}#about`} onClick={close} prefetch={homePrefetch}>{t.nav.about}</Link>
+        <Link href={`${href('/')}#formations`} onClick={close} prefetch={homePrefetch}>{t.nav.courses}</Link>
+        <Link href={href('/contact')} onClick={close}>{t.nav.contact}</Link>
         {loggedIn ? (
           <>
-            <Link href="/dashboard" onClick={close} prefetch={false}>Tableau de bord</Link>
-            <Link href="/profile" onClick={close} prefetch={false}>Mon profil</Link>
+            <Link href={href('/dashboard')} onClick={close} prefetch={false}>{t.nav.dashboard}</Link>
+            <Link href={href('/profile')} onClick={close} prefetch={false}>{t.nav.profile}</Link>
             <form action={logout} onSubmit={() => { setLoggedIn(false); close() }} className="nav-form">
-              <button type="submit" className="nav-btn nav-btn-ghost">Se déconnecter</button>
+              <input type="hidden" name="lang" value={lang} />
+              <button type="submit" className="nav-btn nav-btn-ghost">{t.nav.logout}</button>
             </form>
           </>
         ) : (
           // Tant que l'état n'est pas connu (avant l'hydratation), les boutons gardent leur place sans s'afficher.
           <>
-            <Link href="/login" onClick={close} className={`nav-btn nav-btn-ghost${loggedIn === null ? ' is-pending' : ''}`} prefetch={false}>Connexion</Link>
-            <Link href="/register" onClick={close} className={`nav-btn nav-btn-primary${loggedIn === null ? ' is-pending' : ''}`} prefetch={false}>S’inscrire</Link>
+            <Link href={href('/login')} onClick={close} className={`nav-btn nav-btn-ghost${loggedIn === null ? ' is-pending' : ''}`} prefetch={false}>{t.nav.login}</Link>
+            <Link href={href('/register')} onClick={close} className={`nav-btn nav-btn-primary${loggedIn === null ? ' is-pending' : ''}`} prefetch={false}>{t.nav.register}</Link>
           </>
         )}
+        <div className="lang-switch" role="group" aria-label={t.nav.language}>
+          {LANGS.map((l) => (
+            <Link
+              key={l}
+              href={localizePath(l, stripLang(pathname))}
+              onClick={close}
+              prefetch={false}
+              hrefLang={l}
+              lang={l}
+              aria-current={l === lang ? 'true' : undefined}
+              className={l === lang ? 'is-active' : undefined}
+            >
+              {l.toUpperCase()}
+            </Link>
+          ))}
+        </div>
       </div>
     </nav>
   )

@@ -2,13 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { mediaSrc } from '@/lib/media'
 import { courseUrl } from '@/lib/urls'
+import { getDict } from '@/lib/i18n/dictionaries'
+import { fmt, type Lang } from '@/lib/i18n/config'
 import { Difficulty } from '@prisma/client'
-
-const DIFFICULTY_LABELS: Record<Difficulty, string> = {
-  debutant: 'Débutant',
-  intermediaire: 'Intermédiaire',
-  confirme: 'Confirmé',
-}
 
 type CourseCardProps = {
   id: number
@@ -22,11 +18,13 @@ type CourseCardProps = {
   theme?: { title: string } | null
 }
 
-export default function CourseCard({ course }: { course: CourseCardProps }) {
+export default function CourseCard({ course, lang }: { course: CourseCardProps; lang: Lang }) {
+  const t = getDict(lang)
+  const chaptersLabel = course.chapterCount === 1 ? t.course.chapters_one : t.course.chapters_other
   return (
     // prefetch={false} : pas de préchargement au scroll (une page entière par carte visible),
     // il se fait au survol de la carte.
-    <Link href={courseUrl(course.slug)} className="course-card" prefetch={false}>
+    <Link href={courseUrl(course.slug, lang)} className="course-card" prefetch={false}>
       <div className="course-thumb">
         {course.logo ? (
           // Carte ≈ 280–362px de large dès 640px, pleine largeur (moins la marge) en dessous.
@@ -42,7 +40,7 @@ export default function CourseCard({ course }: { course: CourseCardProps }) {
         )}
         {course.difficulty && (
           <span className="tag-overlay tag-overlay-purple">
-            {DIFFICULTY_LABELS[course.difficulty] ?? course.difficulty}
+            {t.course.difficulty[course.difficulty] ?? course.difficulty}
           </span>
         )}
       </div>
@@ -56,10 +54,10 @@ export default function CourseCard({ course }: { course: CourseCardProps }) {
         )}
         <div className="course-footer">
           {course.chapterCount && (
-            <span>▶ {course.chapterCount} chapitres</span>
+            <span>▶ {fmt(chaptersLabel, { n: course.chapterCount })}</span>
           )}
           {course.duration && <span>⏱ {course.duration}</span>}
-          <span style={{ marginLeft: 'auto', color: 'var(--success)', fontWeight: 600 }}>Gratuit</span>
+          <span style={{ marginLeft: 'auto', color: 'var(--success)', fontWeight: 600 }}>{t.common.free}</span>
         </div>
       </div>
     </Link>

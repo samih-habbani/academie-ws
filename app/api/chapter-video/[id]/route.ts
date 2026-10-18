@@ -24,7 +24,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   if (!chapter) return NextResponse.json({ error: 'Chapitre introuvable.' }, { status: 404, headers: NO_STORE })
 
   return NextResponse.json(
-    { videoId: chapter.urlVideo ? getYoutubeVideoId(chapter.urlVideo) : null, progress },
+    { videoId: chapter.urlVideo ? getYoutubeVideoId(chapter.urlVideo) : null, progress, audioTipDismissed: user.audioTipDismissed },
     { headers: NO_STORE },
   )
 }

@@ -1,21 +1,24 @@
 'use client'
 
 import { useProgress } from './ProgressProvider'
+import { useI18n } from '@/components/I18nProvider'
+import { fmt } from '@/lib/i18n/config'
 
 /** Barre « Ma progression » de la page d'un cours : pourcentage de vidéos vues. */
 export function CourseProgressBar() {
   const { loggedIn, total, completedCount, percent } = useProgress()
+  const { t } = useI18n()
   if (!loggedIn || total === 0) return null
   return (
     <div className="course-progress">
       <div className="course-progress-head">
-        <span>Ma progression</span>
+        <span>{t.progress.title}</span>
         <strong>{percent} %</strong>
       </div>
-      <div className="course-progress-bar" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Avancement du cours">
+      <div className="course-progress-bar" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label={t.progress.ariaCourse}>
         <div style={{ width: `${percent}%` }} />
       </div>
-      <div className="course-progress-sub">{completedCount} / {total} vidéo{total > 1 ? 's' : ''} vue{completedCount > 1 ? 's' : ''}</div>
+      <div className="course-progress-sub">{fmt(completedCount > 1 ? t.progress.seen_other : t.progress.seen_one, { done: completedCount, total })}</div>
     </div>
   )
 }
@@ -23,7 +26,8 @@ export function CourseProgressBar() {
 /** Compteur de la sidebar de lecture : « 3 / 12 vues » pour un membre, « 12 leçons » sinon. */
 export function SidebarCount() {
   const { loggedIn, total, completedCount } = useProgress()
-  return <span className="sidebar-progress">{loggedIn ? `${completedCount} / ${total} vues` : `${total} leçons`}</span>
+  const { t } = useI18n()
+  return <span className="sidebar-progress">{loggedIn ? fmt(t.chapter.watched, { done: completedCount, total }) : fmt(t.chapter.lessons, { n: total })}</span>
 }
 
 /** Fine barre sous l'en-tête de la sidebar : vidéos vues pour un membre, position dans le cours sinon. */

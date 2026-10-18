@@ -1,16 +1,19 @@
 'use client'
 
 import { formatTime } from '@/lib/progress'
+import { useI18n } from '@/components/I18nProvider'
+import { fmt } from '@/lib/i18n/config'
 import { useProgress } from './ProgressProvider'
 
 /** Pastille de statut d'un chapitre : cercle vide (pas commencé), demi-cercle plein (en cours), coche (vu). */
 export default function ChapterStatus({ chapterId }: { chapterId: number }) {
   const { loggedIn, entries } = useProgress()
+  const { t } = useI18n()
   if (!loggedIn) return <span className="chapter-status" aria-hidden="true" />
 
   const entry = entries[chapterId]
   const state = entry?.completed ? 'done' : entry && entry.seconds > 0 ? 'started' : 'none'
-  const label = state === 'done' ? 'Vidéo vue' : state === 'started' ? `En cours — reprise à ${formatTime(entry.seconds)}` : 'Pas encore commencée'
+  const label = state === 'done' ? t.progress.statusDone : state === 'started' ? fmt(t.progress.statusStarted, { time: formatTime(entry.seconds) }) : t.progress.statusNone
 
   return (
     <span className={`chapter-status chapter-status-${state}`} role="img" aria-label={label} title={label}>

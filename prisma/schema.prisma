@@ -103,6 +103,7 @@ model User {
   phone     String?
   bio       String?  @db.Text
   createdAt DateTime @default(now()) @map("created_at")
+  audioTipDismissed Boolean @default(false) @map("audio_tip_dismissed")
   progress  VideoProgress[]
 
   @@map("user")
@@ -138,4 +139,21 @@ model VideoProgress {
   @@unique([userId, chapterId])
   @@index([chapterId])
   @@map("video_progress")
+}
+
+/// Traductions automatiques du contenu (cours, chapitres, catégories, thématiques).
+/// Le français reste la source ; `sourceHash` = empreinte du texte français traduit (détecte les textes modifiés depuis).
+model Translation {
+  id         Int      @id @default(autoincrement())
+  entity     String   // 'course' | 'chapter' | 'category' | 'theme'
+  entityId   Int      @map("entity_id")
+  field      String   // 'title' | 'description' | 'chapterPart'
+  lang       String   // 'en'
+  text       String   @db.Text
+  sourceHash String   @map("source_hash")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@unique([entity, entityId, field, lang])
+  @@index([lang, entity])
+  @@map("translation")
 }

@@ -1,9 +1,10 @@
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import StarCanvas from '@/components/StarCanvas'
+import type { Lang } from '@/lib/i18n/config'
 
-/** Habillage commun des pages de compte (connexion, inscription, profil). */
-export default function AccountShell({ children, width = 460 }: { children: React.ReactNode; width?: number }) {
+/** Habillage commun des pages de compte (connexion, inscription, profil, tableau de bord). */
+export default function AccountShell({ children, lang, width = 460 }: { children: React.ReactNode; lang: Lang; width?: number }) {
   return (
     <>
       <StarCanvas />
@@ -15,7 +16,7 @@ export default function AccountShell({ children, width = 460 }: { children: Reac
         <main style={{ flex: 1 }}>
           <div className="container" style={{ maxWidth: width, paddingTop: 48, paddingBottom: 72 }}>{children}</div>
         </main>
-        <Footer />
+        <Footer lang={lang} />
       </div>
     </>
   )

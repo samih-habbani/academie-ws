@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import { INTL_LOCALE, type Lang } from '@/lib/i18n/config'
 
 export type NextStep = { chapterId: number; title: string; kind: 'resume' | 'next'; seconds: number; duration: number }
 
@@ -7,7 +8,7 @@ export type CourseProgress = {
   slug: string
   title: string
   logo: string
-  category: string | null
+  category: { id: number; title: string } | null
   total: number
   completed: number
   inProgress: number
@@ -19,6 +20,7 @@ export type CourseProgress = {
 }
 
 export type RecentActivity = {
+  courseId: number
   chapterId: number
   chapterTitle: string
   courseSlug: string
@@ -58,7 +60,7 @@ export async function getDashboard(userId: number): Promise<Dashboard> {
           id: true,
           title: true,
           courseId: true,
-          course: { select: { id: true, slug: true, title: true, logo: true, category: { select: { title: true } } } },
+          course: { select: { id: true, slug: true, title: true, logo: true, category: { select: { id: true, title: true } } } },
         },
       },
     },
@@ -97,7 +99,7 @@ export async function getDashboard(userId: number): Promise<Dashboard> {
       slug: course.slug,
       title: course.title.trim(),
       logo: course.logo,
-      category: course.category?.title ?? null,
+      category: course.category ?? null,
       total: list.length,
       completed,
       inProgress,
@@ -115,6 +117,7 @@ export async function getDashboard(userId: number): Promise<Dashboard> {
   return {
     courses,
     recent: rows.slice(0, 8).map((r) => ({
+      courseId: r.chapter.course.id,
       chapterId: r.chapter.id,
       chapterTitle: r.chapter.title,
       courseSlug: r.chapter.course.slug,
@@ -136,20 +139,20 @@ export async function getDashboard(userId: number): Promise<Dashboard> {
   }
 }
 
-/** « 3 h 20 min », « 12 min », « moins d'une minute ». */
-export function formatWatchTime(total: number): string {
+/** « 3 h 20 min », « 12 min », « moins d'1 min » (selon la langue). */
+export function formatWatchTime(total: number, underOneMinute = 'moins d’1 min'): string {
   const h = Math.floor(total / 3600)
   const m = Math.floor((total % 3600) / 60)
   if (h) return m ? `${h} h ${String(m).padStart(2, '0')} min` : `${h} h`
-  return m ? `${m} min` : total > 0 ? 'moins d’1 min' : '0 min'
+  return m ? `${m} min` : total > 0 ? underOneMinute : '0 min'
 }
 
-const RTF = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' })
-export function relativeDate(date: Date, now = new Date()): string {
+export function relativeDate(date: Date, lang: Lang, justNow: string, now = new Date()): string {
+  const rtf = new Intl.RelativeTimeFormat(INTL_LOCALE[lang], { numeric: 'auto' })
   const seconds = Math.round((date.getTime() - now.getTime()) / 1000)
   const steps: [Intl.RelativeTimeFormatUnit, number][] = [['day', 86400], ['hour', 3600], ['minute', 60]]
   for (const [unit, size] of steps) {
-    if (Math.abs(seconds) >= size) return RTF.format(Math.round(seconds / size), unit)
+    if (Math.abs(seconds) >= size) return rtf.format(Math.round(seconds / size), unit)
   }
-  return 'à l’instant'
+  return justNow
 }
