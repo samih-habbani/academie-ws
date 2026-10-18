@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  BookOpen, ExternalLink, Folders, Inbox, LayoutDashboard, ListVideo, LogOut, Menu, Tags, Users, X,
+  BookOpen, ExternalLink, Folders, Inbox, LayoutDashboard, Lightbulb, ListVideo, LogOut, Menu, Tags, Users, X,
   type LucideIcon,
 } from 'lucide-react'
 import { logout } from '../actions'
@@ -15,6 +15,7 @@ type NavGroup = { label: string | null; items: NavItem[] }
 
 const NAV: NavGroup[] = [
   { label: null, items: [{ href: '/admin', label: 'Tableau de bord', icon: LayoutDashboard, exact: true }] },
+  { label: 'Mon espace', items: [{ href: '/admin/ideas', label: 'Idées de vidéos', icon: Lightbulb }] },
   {
     label: 'Contenu',
     items: [

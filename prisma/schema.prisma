@@ -105,6 +105,7 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   audioTipDismissed Boolean @default(false) @map("audio_tip_dismissed")
   progress  VideoProgress[]
+  videoIdeas VideoIdea[]
 
   @@map("user")
 }
@@ -156,4 +157,34 @@ model Translation {
   @@unique([entity, entityId, field, lang])
   @@index([lang, entity])
   @@map("translation")
+}
+
+/// Idée de vidéo notée par un administrateur (espace personnel du back-office, jamais affichée sur le site).
+model VideoIdea {
+  id          Int             @id @default(autoincrement())
+  userId      Int             @map("user_id")
+  title       String
+  description String          @default("") @db.Text
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links       VideoIdeaLink[]
+
+  @@index([userId, updatedAt])
+  @@map("video_idea")
+}
+
+/// Vidéo YouTube repérée comme source d'inspiration pour une idée.
+model VideoIdeaLink {
+  id       Int       @id @default(autoincrement())
+  ideaId   Int       @map("idea_id")
+  videoId  String    @map("video_id")
+  url      String
+  title    String?
+  author   String?
+  position Int       @default(0)
+  idea     VideoIdea @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([ideaId])
+  @@map("video_idea_link")
 }

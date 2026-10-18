@@ -310,3 +310,23 @@
 .adm-brand { padding: 20px 16px 16px; gap: 8px; }
 .adm-brand-logo { font-size: 17px; white-space: nowrap; }
 .adm-brand-tag { font-size: 9px; padding: 3px 7px; letter-spacing: 0.8px; }
+
+/* IDÉES DE VIDÉOS (espace personnel) */
+.adm-ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.adm-idea-card { display: flex; flex-direction: column; gap: 12px; padding: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 14px; }
+.adm-idea-thumbs { display: flex; gap: 6px; }
+.adm-idea-thumbs img { flex: 1 1 0; min-width: 0; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; }
+.adm-idea-body { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.adm-idea-title { font-weight: 700; font-size: 15.5px; color: inherit; text-decoration: none; }
+.adm-idea-title:hover { color: var(--purple-l); }
+.adm-idea-excerpt { margin: 0; font-size: 13.5px; opacity: .72; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+.adm-idea-meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; opacity: .6; margin-top: auto; }
+.adm-idea-actions { display: flex; justify-content: flex-end; }
+.adm-idea-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.adm-idea-links li { display: flex; align-items: center; gap: 12px; padding: 8px; border: 1px solid var(--border); border-radius: 10px; }
+.adm-idea-links img, .adm-idea-noimg { width: 112px; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: rgba(255,255,255,.06); }
+.adm-idea-link-main { flex: 1; min-width: 0; }
+.adm-idea-link-title { font-weight: 600; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-idea-add { display: flex; gap: 10px; }
+.adm-idea-add input { flex: 1; min-width: 0; }
+@media (max-width: 560px) { .adm-ideas { grid-template-columns: 1fr; } .adm-idea-links img, .adm-idea-noimg { width: 84px; } .adm-idea-add { flex-direction: column; } }
