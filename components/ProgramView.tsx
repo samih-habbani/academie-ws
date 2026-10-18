@@ -8,6 +8,7 @@ import { formatHours, publicPrice, toLines, totalHours, type ProgramFull } from 
 import PrintButton from '@/components/PrintButton'
 import CourseCard from '@/components/CourseCard'
 import { loadTranslations } from '@/lib/i18n/content'
+import { localizeProgram } from '@/lib/i18n/programs'
 import ProgramAccordion from '@/components/ProgramAccordion'
 
 function ListBlock({ title, items }: { title: string; items: string[] }) {
@@ -21,9 +22,9 @@ function ListBlock({ title, items }: { title: string; items: string[] }) {
 }
 
 /** Fiche programme complète (page publique et aperçu des brouillons). */
-export default async function ProgramView({ program, lang, preview = false }: { program: ProgramFull; lang: Lang; preview?: boolean }) {
+export default async function ProgramView({ program: source, lang, preview = false }: { program: ProgramFull; lang: Lang; preview?: boolean }) {
   const t = getDict(lang)
-  const tr = await loadTranslations(lang, { course: program.courses.map((c) => c.id) })
+  const [program, tr] = await Promise.all([localizeProgram(source, lang), loadTranslations(lang, { course: source.courses.map((c) => c.id) })])
   const p = t.programs
   const hours = totalHours(program.modules)
   const price = publicPrice(program, lang)

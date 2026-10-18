@@ -1,6 +1,6 @@
 ---
 name: translate-site-content
-description: Traduit en anglais (ou une autre langue) le contenu de la base Académie WS — cours, chapitres, catégories, thématiques — et le stocke dans la table `translation`, sans API de traduction : c'est Claude qui traduit, dans la session. À utiliser quand l'utilisateur ajoute ou modifie des cours/chapitres et demande de « traduire les nouveautés », de « mettre à jour les traductions », ou d'ajouter une nouvelle langue au site.
+description: Traduit en anglais (ou une autre langue) le contenu de la base Académie WS — cours, chapitres, catégories, thématiques, programmes B2B — et le stocke dans la table `translation`, sans API de traduction : c'est Claude qui traduit, dans la session. À utiliser quand l'utilisateur ajoute ou modifie des cours/chapitres et demande de « traduire les nouveautés », de « mettre à jour les traductions », ou d'ajouter une nouvelle langue au site.
 ---
 
 # Traduire le contenu du site (sans API)
@@ -21,6 +21,10 @@ Scripts dans `.claude/skills/translate-site-content/scripts/`, à lancer **depui
    `node …/import-translations.mjs /tmp/tr-en.json /tmp/tr/b1.txt /tmp/tr/b2.txt …` (aperçu : couverture, textes manquants, traductions identiques au français)
    puis la même commande avec `--apply`. Relancer `export-missing.mjs` : il doit afficher 0 champ.
 5. **Prévenir l'utilisateur** : combien de champs traduits, et que les pages publiques sont en cache ISR (jusqu'à 1 h) avant d'afficher la traduction.
+
+## Programmes B2B
+
+Les textes des programmes (titre, accroche, résumé, public, objectifs, modules, ateliers, certifications…) sont traduits **par texte** : l'export les liste avec `entity = 'text'`, et la clé de la traduction est l'empreinte du français (pas l'identifiant du module, qui change à chaque enregistrement du back-office). Conséquences : un texte identique dans plusieurs programmes n'est traduit qu'une fois, une traduction survit aux modifications du back-office, et si le français d'un texte change, ce texte repasse en français jusqu'au prochain passage de la skill. La liste des champs traduits est dans `lib/i18n/programs.ts` (`mapProgramText`) et dans `programTexts` de `export-missing.mjs` : les deux doivent rester identiques. Les noms d'outils et les références de certification ne sont pas traduits.
 
 ## Règles de traduction
 

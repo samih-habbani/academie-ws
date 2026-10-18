@@ -8,6 +8,7 @@ import { prisma } from '@/lib/db'
 import { hasLang } from '@/lib/i18n/config'
 import { alternatesFor } from '@/lib/i18n/metadata'
 import { programInclude } from '@/lib/programs'
+import { localizeProgram } from '@/lib/i18n/programs'
 
 // ISR : régénérée au plus toutes les heures, et à chaque enregistrement depuis le back-office.
 export const revalidate = 3600
@@ -24,8 +25,9 @@ async function load(slug: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params
   if (!hasLang(lang)) return {}
-  const program = await load(slug)
-  if (!program) return {}
+  const source = await load(slug)
+  if (!source) return {}
+  const program = await localizeProgram(source, lang)
   return {
     title: `${program.title} — Académie WS`,
     description: program.tagline || program.summary.slice(0, 160),

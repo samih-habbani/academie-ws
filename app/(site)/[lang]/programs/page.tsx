@@ -8,6 +8,7 @@ import { prisma } from '@/lib/db'
 import { hasLang, localizePath } from '@/lib/i18n/config'
 import { getDict } from '@/lib/i18n/dictionaries'
 import { alternatesFor } from '@/lib/i18n/metadata'
+import { loadTextTranslations } from '@/lib/i18n/content'
 import Link from 'next/link'
 
 export const revalidate = 3600
@@ -31,8 +32,9 @@ export default async function ProgramsPage({ params }: Props) {
     orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
     include: { modules: { select: { hours: true } } },
   })
+  const tx = await loadTextTranslations(lang, rows.flatMap((r) => [r.title, r.tagline]))
   const programs: BrowserProgram[] = rows.map((r) => ({
-    id: r.id, slug: r.slug, title: r.title, tagline: r.tagline, domain: r.domain, level: r.level, coverImage: r.coverImage,
+    id: r.id, slug: r.slug, title: tx(r.title), tagline: tx(r.tagline), domain: r.domain, level: r.level, coverImage: r.coverImage,
     hours: r.modules.reduce((s, m) => s + m.hours, 0), hoursPerDay: r.hoursPerDay, modules: r.modules.length, formats: r.formats,
   }))
 

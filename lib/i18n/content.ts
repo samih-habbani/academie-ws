@@ -30,3 +30,22 @@ export async function loadTranslations(lang: Lang, wanted: Partial<Record<Entity
   const map = new Map(rows.map((r) => [`${r.entity}:${r.entityId}:${r.field}`, r.text]))
   return (entity, id, field, fallback) => map.get(`${entity}:${id}:${field}`) ?? fallback
 }
+
+/**
+ * Traductions « par texte » (contenu des programmes) : la clé est l'empreinte du texte français
+ * (entity 'text', entityId 0, field = empreinte), pas un identifiant de ligne. Les modules et ateliers sont réécrits
+ * à chaque enregistrement du back-office : la traduction suit donc le texte, pas la ligne. Si le français change,
+ * l'empreinte change et le texte repasse en français jusqu'à la prochaine exécution de la skill de traduction.
+ */
+export async function loadTextTranslations(lang: Lang, texts: string[]): Promise<(text: string) => string> {
+  const same = (text: string) => text
+  if (lang === DEFAULT_LANG) return same
+  const hashes = [...new Set(texts.map((t) => t.trim()).filter(Boolean).map(sourceHash))]
+  if (hashes.length === 0) return same
+  const rows = await prisma.translation.findMany({
+    where: { lang, entity: 'text', entityId: 0, field: { in: hashes } },
+    select: { field: true, text: true },
+  })
+  const map = new Map(rows.map((r) => [r.field, r.text]))
+  return (text) => map.get(sourceHash(text.trim())) ?? text
+}

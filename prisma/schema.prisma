@@ -147,7 +147,7 @@ model VideoProgress {
 /// Le français reste la source ; `sourceHash` = empreinte du texte français traduit (détecte les textes modifiés depuis).
 model Translation {
   id         Int      @id @default(autoincrement())
-  entity     String   // 'course' | 'chapter' | 'category' | 'theme'
+  entity     String   // 'course' | 'chapter' | 'category' | 'theme' | 'text' (texte des programmes, field = empreinte du français)
   entityId   Int      @map("entity_id")
   field      String   // 'title' | 'description' | 'chapterPart'
   lang       String   // 'en'
