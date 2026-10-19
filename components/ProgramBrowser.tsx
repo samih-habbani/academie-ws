@@ -1,12 +1,13 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useI18n } from '@/components/I18nProvider'
 import { mediaSrc } from '@/lib/media'
 import { fmt } from '@/lib/i18n/config'
-import { formatHours } from '@/lib/programs'
+import { DOMAINS, formatHours } from '@/lib/programs'
+import ProgramCover from '@/components/ProgramCover'
+import { useTilt } from '@/components/useTilt'
 
 export type BrowserProgram = {
   id: number
@@ -16,6 +17,9 @@ export type BrowserProgram = {
   domain: string
   level: string | null
   coverImage: string
+  coverHeadline: string
+  tools: string[]
+  certified: boolean
   hours: number
   hoursPerDay: number
   modules: number
@@ -31,14 +35,17 @@ export default function ProgramBrowser({ programs }: { programs: BrowserProgram[
   const [query, setQuery] = useState('')
   const [domain, setDomain] = useState('')
   const [level, setLevel] = useState('')
+  const tilt = useTilt(7)
 
-  const domains = useMemo(() => [...new Set(programs.map((x) => x.domain))], [programs])
+  const domains = useMemo(() => DOMAINS.filter((d) => programs.some((x) => x.domain === d)), [programs])
   const levels = useMemo(() => [...new Set(programs.flatMap((x) => (x.level ? [x.level] : [])))], [programs])
   const q = norm(query.trim())
   const shown = programs.filter(
     (x) => (!domain || x.domain === domain) && (!level || x.level === level) && (!q || norm(`${x.title} ${x.tagline}`).includes(q)),
   )
   const active = query !== '' || domain !== '' || level !== ''
+  // Regroupement par domaine, dans l'ordre du catalogue ; un seul groupe → pas de titre.
+  const groups = DOMAINS.map((d) => ({ domain: d, items: shown.filter((x) => x.domain === d) })).filter((g) => g.items.length > 0)
 
   return (
     <>
@@ -65,32 +72,38 @@ export default function ProgramBrowser({ programs }: { programs: BrowserProgram[
       {programs.length === 0 && <p className="course-filter-empty">{p.empty}</p>}
       {programs.length > 0 && shown.length === 0 && <p className="course-filter-empty">{p.none}</p>}
 
-      <div className="courses-grid">
-        {shown.map((x) => (
-          <Link key={x.id} href={href(`/programs/${x.slug}`)} className="course-card" prefetch={false}>
-            <div className="course-thumb program-card-thumb">
-              {x.coverImage ? (
-                <Image src={mediaSrc('programs', x.coverImage)} alt={x.title} fill sizes="(max-width: 640px) 100vw, 360px" quality={70} />
-              ) : (
-                <span className="course-thumb-placeholder">🎓</span>
-              )}
-              {x.level && <span className="tag-overlay tag-overlay-purple">{(t.course.difficulty as Record<string, string>)[x.level] ?? x.level}</span>}
-            </div>
-            <div className="course-body">
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                <span className="tag tag-cyan">{(p.domain as Record<string, string>)[x.domain] ?? x.domain}</span>
-              </div>
-              <div className="course-title">{x.title}</div>
-              {x.tagline && <div className="course-excerpt">{x.tagline}</div>}
-              <div className="course-footer">
-                {x.hours > 0 && <span>⏱ {formatHours(x.hours, x.hoursPerDay, lang)}</span>}
-                {x.modules > 0 && <span>▶ {fmt(x.modules === 1 ? p.modules_one : p.modules_other, { n: x.modules })}</span>}
-                <span style={{ marginLeft: 'auto', color: 'var(--purple-l)', fontWeight: 600 }}>→</span>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
+      {groups.map((g) => (
+        <section key={g.domain} className="program-domain">
+          {groups.length > 1 && (
+            <h2 className="program-domain-title">
+              {(p.domain as Record<string, string>)[g.domain] ?? g.domain}
+              <span>{g.items.length}</span>
+            </h2>
+          )}
+          <div className="courses-grid">
+            {g.items.map((x) => (
+              <Link key={x.id} href={href(`/programs/${x.slug}`)} className="course-card program-card" prefetch={false} {...tilt}>
+                <div className="course-thumb program-card-thumb">
+                  <ProgramCover title={x.title} headline={x.coverHeadline} domain={x.domain} tools={x.tools} certified={x.certified} image={x.coverImage ? mediaSrc('programs', x.coverImage) : undefined} />
+                {x.level && <span className="tag-overlay tag-overlay-purple">{(t.course.difficulty as Record<string, string>)[x.level] ?? x.level}</span>}
+                </div>
+                <div className="course-body">
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <span className="tag tag-cyan">{(p.domain as Record<string, string>)[x.domain] ?? x.domain}</span>
+                  </div>
+                  <div className="course-title">{x.title}</div>
+                  {x.tagline && <div className="course-excerpt">{x.tagline}</div>}
+                  <div className="course-footer">
+                    {x.hours > 0 && <span>⏱ {formatHours(x.hours, x.hoursPerDay, lang)}</span>}
+                    {x.modules > 0 && <span>▶ {fmt(x.modules === 1 ? p.modules_one : p.modules_other, { n: x.modules })}</span>}
+                    <span style={{ marginLeft: 'auto', color: 'var(--purple-l)', fontWeight: 600 }}>→</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ))}
     </>
   )
 }

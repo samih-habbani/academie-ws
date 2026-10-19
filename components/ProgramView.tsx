@@ -10,6 +10,8 @@ import CourseCard from '@/components/CourseCard'
 import { loadTranslations } from '@/lib/i18n/content'
 import { localizeProgram } from '@/lib/i18n/programs'
 import ProgramAccordion from '@/components/ProgramAccordion'
+import ProgramCover from '@/components/ProgramCover'
+import Tilt from '@/components/Tilt'
 
 function ListBlock({ title, items }: { title: string; items: string[] }) {
   if (items.length === 0) return null
@@ -73,11 +75,9 @@ export default async function ProgramView({ program: source, lang, preview = fal
             <PrintButton label={p.download} />
           </div>
         </div>
-        {program.coverImage && (
-          <div className="program-cover">
-            <Image src={mediaSrc('programs', program.coverImage)} alt={program.title} fill sizes="(max-width: 800px) 100vw, 380px" quality={70} loading="eager" />
-          </div>
-        )}
+        <Tilt className="program-cover program-cover-tilt" max={5}>
+          <ProgramCover size="hero" title={program.title} headline={program.coverHeadline} domain={program.domain} tools={program.tools.map((t) => t.name)} certified={program.certifications.length > 0} image={program.coverImage ? mediaSrc('programs', program.coverImage) : undefined} />
+        </Tilt>
       </header>
 
       {facts.length > 0 && (

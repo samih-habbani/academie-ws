@@ -1,8 +1,15 @@
 import type { Prisma } from '@prisma/client'
 import type { Lang } from '@/lib/i18n/config'
 
-export const DOMAINS = ['web', 'data', 'design', 'marketing', 'systems', 'other'] as const
+// L'ordre ci-dessous est celui d'affichage du catalogue public (regroupé par domaine).
+export const DOMAINS = ['cursus', 'dev', 'web', 'backend', 'mobile', 'data', 'ai', 'aidev', 'compliance', 'marketing', 'systems', 'design', 'other'] as const
 export type Domain = (typeof DOMAINS)[number]
+/** Libellés français des domaines (back-office). Ceux du site public sont dans les dictionnaires (`programs.domain`). */
+export const DOMAIN_LABELS: Record<Domain, string> = {
+  cursus: 'Cursus & titres professionnels', dev: 'Fondamentaux du développement', web: 'Développement web front-end', backend: 'Back-end & frameworks',
+  mobile: 'Développement mobile', data: 'Data science', ai: 'IA générative & assistants', aidev: 'IA pour développeurs',
+  compliance: 'Conformité & gouvernance de l’IA', marketing: 'SEO, SEA & analytics', systems: 'Systèmes & réseaux', design: 'Design & UX', other: 'Autre',
+}
 export const LEVELS = ['debutant', 'intermediaire', 'confirme'] as const
 export const FORMATS = ['presentiel', 'distanciel', 'mixte'] as const
 export const STATUSES = ['draft', 'published'] as const

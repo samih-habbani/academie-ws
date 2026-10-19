@@ -30,11 +30,11 @@ export default async function ProgramsPage({ params }: Props) {
   const rows = await prisma.program.findMany({
     where: { status: 'published' },
     orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
-    include: { modules: { select: { hours: true } } },
+    include: { modules: { select: { hours: true } }, tools: { select: { name: true }, orderBy: { name: 'asc' } }, certifications: { select: { id: true } } },
   })
   const tx = await loadTextTranslations(lang, rows.flatMap((r) => [r.title, r.tagline]))
   const programs: BrowserProgram[] = rows.map((r) => ({
-    id: r.id, slug: r.slug, title: tx(r.title), tagline: tx(r.tagline), domain: r.domain, level: r.level, coverImage: r.coverImage,
+    id: r.id, slug: r.slug, title: tx(r.title), tagline: tx(r.tagline), domain: r.domain, level: r.level, coverImage: r.coverImage, coverHeadline: r.coverHeadline, tools: r.tools.map((t) => t.name), certified: r.certifications.length > 0,
     hours: r.modules.reduce((s, m) => s + m.hours, 0), hoursPerDay: r.hoursPerDay, modules: r.modules.length, formats: r.formats,
   }))
 

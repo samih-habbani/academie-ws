@@ -200,6 +200,7 @@ model Program {
   domain          String          @default("web")        // web | data | design | marketing | systems | other
   level           String?                                // debutant | intermediaire | confirme
   coverImage      String          @default("") @map("cover_image")
+  coverHeadline   String          @default("") @map("cover_headline") // accroche de l’illustration (en anglais)
   audience        String          @default("") @db.Text
   prerequisites   String          @default("") @db.Text
   objectives      String[]

@@ -5,14 +5,10 @@ import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/admin-auth'
 import { param, type SearchParams } from '@/lib/admin/list'
 import { formatDate } from '@/lib/admin/format'
-import { formatHours } from '@/lib/programs'
+import { DOMAIN_LABELS, formatHours } from '@/lib/programs'
 import { Badge, EmptyState, PageHeader } from '../../_components/ui'
 import ConfirmDelete from '../../_components/ConfirmDelete'
 import { deleteProgram, duplicateProgram } from './actions'
-
-const DOMAIN_LABELS: Record<string, string> = {
-  web: 'Web & mobile', data: 'Data & IA', design: 'Design & UX', marketing: 'Marketing digital', systems: 'Systèmes & réseaux', other: 'Autre',
-}
 
 // Dupliquer ne demande pas de confirmation : la copie est un brouillon, sans risque.
 async function duplicate(formData: FormData) {
@@ -74,7 +70,7 @@ export default async function ProgramsPage({ searchParams }: { searchParams: Pro
                         <Link href={`/admin/programs/${p.id}`} prefetch={false}>{p.title}</Link>
                         <div className="adm-cell-sub">{p.modules.length} module{p.modules.length > 1 ? 's' : ''} · {p._count.tools} outil{p._count.tools > 1 ? 's' : ''} · {p._count.certifications} certification{p._count.certifications > 1 ? 's' : ''}</div>
                       </td>
-                      <td className="adm-hide-md">{DOMAIN_LABELS[p.domain] ?? p.domain}</td>
+                      <td className="adm-hide-md">{(DOMAIN_LABELS as Record<string, string>)[p.domain] ?? p.domain}</td>
                       <td className="adm-muted">{hours ? formatHours(hours, p.hoursPerDay, 'fr') : '—'}</td>
                       <td className="adm-muted adm-hide-md">{formatDate(p.updatedAt)}</td>
                       <td><Badge tone={p.status === 'published' ? 'green' : 'gray'}>{p.status === 'published' ? 'Publié' : 'Brouillon'}</Badge></td>

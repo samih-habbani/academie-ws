@@ -60,7 +60,7 @@ export const en: Dict = {
     results_other: '{n} programs',
     none: 'No program matches your search.',
     empty: 'Programs are coming soon.',
-    domain: { web: 'Web & mobile', data: 'Data & AI', design: 'Design & UX', marketing: 'Digital marketing', systems: 'Systems & networks', other: 'Other' },
+    domain: { cursus: 'Career paths & professional titles', dev: 'Programming fundamentals', web: 'Front-end web development', backend: 'Back-end & frameworks', mobile: 'Mobile development', data: 'Data science', ai: 'Generative AI & assistants', aidev: 'AI for developers', compliance: 'AI compliance & governance', marketing: 'SEO, SEA & analytics', systems: 'Systems & networks', design: 'Design & UX', other: 'Other' },
     format: { presentiel: 'On site', distanciel: 'Remote', mixte: 'Blended' },
     duration: 'Duration',
     level: 'Level',

@@ -59,7 +59,7 @@ export const fr = {
     results_other: '{n} programmes',
     none: 'Aucun programme ne correspond à ta recherche.',
     empty: 'Les programmes arrivent bientôt.',
-    domain: { web: 'Web & mobile', data: 'Data & IA', design: 'Design & UX', marketing: 'Marketing digital', systems: 'Systèmes & réseaux', other: 'Autre' },
+    domain: { cursus: 'Cursus & titres professionnels', dev: 'Fondamentaux du développement', web: 'Développement web front-end', backend: 'Back-end & frameworks', mobile: 'Développement mobile', data: 'Data science', ai: 'IA générative & assistants', aidev: 'IA pour développeurs', compliance: 'Conformité & gouvernance de l’IA', marketing: 'SEO, SEA & analytics', systems: 'Systèmes & réseaux', design: 'Design & UX', other: 'Autre' },
     format: { presentiel: 'Présentiel', distanciel: 'Distanciel', mixte: 'Mixte' },
     duration: 'Durée',
     level: 'Niveau',

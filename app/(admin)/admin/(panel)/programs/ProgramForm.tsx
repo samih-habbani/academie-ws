@@ -2,13 +2,13 @@
 
 import { useActionState, useState } from 'react'
 import { emptyState, type FormState } from '@/lib/admin/form-state'
-import { DOMAINS, FORMATS, LEVELS } from '@/lib/programs'
+import { DOMAIN_LABELS, DOMAINS, FORMATS, LEVELS } from '@/lib/programs'
 import { FormAlert, FormBar, SelectField, Switch, TextArea, TextInput } from '../../_components/FormKit'
 import ImageField from '../../_components/ImageField'
 import ModulesEditor, { type ModuleDraft } from './ModulesEditor'
 
 export type ProgramValues = {
-  title: string; slug: string; tagline: string; summary: string; domain: string; level: string; coverImage: string
+  title: string; slug: string; tagline: string; summary: string; domain: string; level: string; coverImage: string; coverHeadline: string
   audience: string; prerequisites: string; objectives: string; outcomes: string
   maxParticipants: string; hoursPerDay: string; teachingMethods: string; evaluation: string; equipment: string; resources: string
   priceAmount: string; priceUnit: string; showPrice: boolean; status: string; position: string
@@ -16,9 +16,6 @@ export type ProgramValues = {
   modules: ModuleDraft[]
 }
 
-const DOMAIN_LABELS: Record<string, string> = {
-  web: 'Web & mobile', data: 'Data & IA', design: 'Design & UX', marketing: 'Marketing digital', systems: 'Systèmes & réseaux', other: 'Autre',
-}
 const LEVEL_LABELS: Record<string, string> = { debutant: 'Débutant', intermediaire: 'Intermédiaire', confirme: 'Confirmé' }
 const FORMAT_LABELS: Record<string, string> = { presentiel: 'Présentiel', distanciel: 'Distanciel', mixte: 'Mixte' }
 
@@ -89,6 +86,7 @@ export default function ProgramForm({
                 <SelectField name="domain" label="Domaine" required defaultValue={text('domain')} error={err.domain} options={DOMAINS.map((d) => ({ value: d, label: DOMAIN_LABELS[d] }))} />
                 <SelectField name="level" label="Niveau" defaultValue={text('level')} error={err.level} placeholder="Non précisé" options={LEVELS.map((l) => ({ value: l, label: LEVEL_LABELS[l] }))} />
               </div>
+              <TextInput name="coverHeadline" label="Titre d’illustration (en anglais)" defaultValue={text('coverHeadline')} error={err.coverHeadline} maxLength={60} placeholder="ex. Build UIs that react." hint="Phrase courte et accrocheuse affichée sur l’illustration de la carte. Laisser vide pour reprendre le titre du programme." />
               <ImageField name="coverImage" folder="programs" label="Image de couverture" defaultValue={text('coverImage')} error={err.coverImage} hint="Optionnelle. Sans image, un fond dégradé est utilisé." />
             </div>
           </section>

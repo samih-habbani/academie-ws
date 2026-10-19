@@ -17,7 +17,7 @@ export async function loadChoices() {
 }
 
 export const emptyProgram: ProgramValues = {
-  title: '', slug: '', tagline: '', summary: '', domain: 'web', level: '', coverImage: '',
+  title: '', slug: '', tagline: '', summary: '', domain: 'web', level: '', coverImage: '', coverHeadline: '',
   audience: '', prerequisites: '', objectives: '', outcomes: '',
   maxParticipants: '', hoursPerDay: '7', teachingMethods: '', evaluation: '', equipment: '', resources: '',
   priceAmount: '', priceUnit: '', showPrice: false, status: 'draft', position: '0',
@@ -27,7 +27,7 @@ export const emptyProgram: ProgramValues = {
 export function toFormValues(p: ProgramFull): ProgramValues {
   const hours = (n: number) => (n ? String(n) : '')
   return {
-    title: p.title, slug: p.slug, tagline: p.tagline, summary: p.summary, domain: p.domain, level: p.level ?? '', coverImage: p.coverImage,
+    title: p.title, slug: p.slug, tagline: p.tagline, summary: p.summary, domain: p.domain, level: p.level ?? '', coverImage: p.coverImage, coverHeadline: p.coverHeadline,
     audience: p.audience, prerequisites: p.prerequisites, objectives: p.objectives.join('\n'), outcomes: p.outcomes.join('\n'),
     maxParticipants: p.maxParticipants == null ? '' : String(p.maxParticipants), hoursPerDay: String(p.hoursPerDay),
     teachingMethods: p.teachingMethods, evaluation: p.evaluation, equipment: p.equipment, resources: p.resources,
